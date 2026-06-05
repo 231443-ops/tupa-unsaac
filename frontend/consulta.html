@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Consulta pública de trámites - TUPA UNSAAC">
+    <title>Consultar Trámite - TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .consulta-page {
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        .consulta-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--navbar-height);
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--color-gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-4);
+            z-index: var(--z-fixed);
+        }
+
+        .consulta-navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .consulta-navbar-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--color-primary);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--font-bold);
+        }
+
+        .consulta-navbar-title {
+            font-size: var(--text-lg);
+            font-weight: var(--font-bold);
+            color: var(--color-primary);
+        }
+
+        .consulta-main {
+            padding: calc(var(--navbar-height) + var(--space-8)) var(--space-4) var(--space-8);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .consulta-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .consulta-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--color-primary-50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-4);
+            color: var(--color-primary);
+        }
+
+        .consulta-title {
+            font-size: var(--text-2xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .consulta-subtitle {
+            font-size: var(--text-base);
+            color: var(--text-tertiary);
+        }
+
+        /* Form */
+        .consulta-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-4);
+        }
+
+        .expediente-inputs {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: var(--space-2);
+        }
+
+        .expediente-prefix {
+            padding: var(--space-2) var(--space-3);
+            background: var(--color-gray-100);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Alert */
+        .consulta-alert {
+            display: none;
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-4);
+        }
+
+        .consulta-alert.error {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            background: var(--color-error-light);
+            color: var(--color-error-dark);
+            border: 1px solid var(--color-error);
+        }
+
+        .consulta-alert.info {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            background: var(--color-info-light);
+            color: var(--color-info-dark);
+            border: 1px solid var(--color-info);
+        }
+
+        /* Result */
+        .resultado {
+            display: none;
+        }
+
+        .resultado.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .resultado-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .resultado-expediente {
+            font-size: var(--text-xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+        }
+
+        .resultado-procedimiento {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            margin-top: var(--space-1);
+        }
+
+        /* Estado visual */
+        .estado-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+        }
+
+        .estado-pendiente {
+            background: var(--color-warning-light);
+            color: var(--color-warning-dark);
+        }
+
+        .estado-en_proceso {
+            background: var(--color-info-light);
+            color: var(--color-info-dark);
+        }
+
+        .estado-observado {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .estado-aprobado {
+            background: var(--color-success-light);
+            color: var(--color-success-dark);
+        }
+
+        .estado-rechazado {
+            background: var(--color-error-light);
+            color: var(--color-error-dark);
+        }
+
+        /* Info grid */
+        .resultado-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .info-item {
+            background: var(--color-gray-50);
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+        }
+
+        .info-label {
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-1);
+        }
+
+        .info-value {
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--text-primary);
+        }
+
+        .info-value.urgente {
+            color: var(--color-error);
+        }
+
+        /* Progress */
+        .progress-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .progress-title {
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .progress-bar-container {
+            background: var(--color-gray-200);
+            border-radius: var(--radius-full);
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: var(--space-2);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar-fill.success {
+            background: var(--color-success);
+        }
+
+        .progress-bar-fill.warning {
+            background: var(--color-warning);
+        }
+
+        .progress-bar-fill.error {
+            background: var(--color-error);
+        }
+
+        .progress-text {
+            font-size: var(--text-xs);
+            color: var(--text-tertiary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Timeline */
+        .historial-title {
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+
+        .historial-empty {
+            text-align: center;
+            padding: var(--space-6);
+            color: var(--text-tertiary);
+            font-size: var(--text-sm);
+        }
+
+        /* Nueva consulta */
+        .nueva-consulta {
+            text-align: center;
+            margin-top: var(--space-6);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--color-gray-200);
+        }
+
+        @media (min-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .resultado-info {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="consulta-page">
+        <!-- Navbar -->
+        <nav class="consulta-navbar">
+            <a href="index.html" class="consulta-navbar-brand">
+                <div class="consulta-navbar-logo">U</div>
+                <span class="consulta-navbar-title">TUPA UNSAAC</span>
+            </a>
+            <a href="login.html" class="btn btn-primary btn-sm">Iniciar Sesión</a>
+        </nav>
+
+        <!-- Main -->
+        <main class="consulta-main">
+            <div class="consulta-header">
+                <div class="consulta-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <h1 class="consulta-title">Consulta de Trámite</h1>
+                <p class="consulta-subtitle">Ingresa los datos de tu expediente para conocer su estado</p>
+            </div>
+
+            <!-- Form -->
+            <div class="consulta-card" id="consulta-form-card">
+                <div class="consulta-alert" id="consulta-alert"></div>
+
+                <form id="consulta-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label form-label-required" for="anio">Año del expediente</label>
+                            <select id="anio" class="form-select" required>
+                                <option value="">Seleccionar año</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label form-label-required" for="numero">Número de expediente</label>
+                            <div class="expediente-inputs">
+                                <span class="expediente-prefix" id="expediente-prefix">EXP-2026-</span>
+                                <input
+                                    type="text"
+                                    id="numero"
+                                    class="form-input"
+                                    placeholder="00001"
+                                    maxlength="5"
+                                    pattern="[0-9]{5}"
+                                    required
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label form-label-required" for="dni">DNI del solicitante</label>
+                        <input
+                            type="text"
+                            id="dni"
+                            class="form-input"
+                            placeholder="Ingrese su DNI (8 dígitos)"
+                            maxlength="8"
+                            pattern="[0-9]{8}"
+                            required
+                            style="max-width: 300px;"
+                        >
+                        <p class="form-helper">El DNI debe coincidir con el registrado en el trámite</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" id="btn-consultar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        Consultar estado
+                    </button>
+                </form>
+            </div>
+
+            <!-- Resultado -->
+            <div class="consulta-card resultado" id="resultado">
+                <div class="resultado-header">
+                    <div>
+                        <div class="resultado-expediente" id="res-expediente">EXP-2026-00001</div>
+                        <div class="resultado-procedimiento" id="res-procedimiento">Constancia de estudios</div>
+                    </div>
+                    <span class="estado-badge estado-pendiente" id="res-estado-badge">
+                        <span id="res-estado-text">Pendiente</span>
+                    </span>
+                </div>
+
+                <div class="resultado-info">
+                    <div class="info-item">
+                        <div class="info-label">Dependencia</div>
+                        <div class="info-value" id="res-dependencia">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Fecha inicio</div>
+                        <div class="info-value" id="res-fecha-inicio">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Días transcurridos</div>
+                        <div class="info-value" id="res-dias-transcurridos">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Días restantes</div>
+                        <div class="info-value" id="res-dias-restantes">-</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-title">Progreso del plazo</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill success" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-text-left">0 días</span>
+                        <span id="progress-text-right">de 30 días</span>
+                    </div>
+                </div>
+
+                <div class="historial-section">
+                    <div class="historial-title">Historial de estados</div>
+                    <div class="timeline" id="historial-timeline">
+                        <div class="historial-empty">No hay historial disponible</div>
+                    </div>
+                </div>
+
+                <div class="nueva-consulta">
+                    <button type="button" class="btn btn-secondary" id="btn-nueva-consulta">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                        Nueva consulta
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const form = document.getElementById('consulta-form');
+        const formCard = document.getElementById('consulta-form-card');
+        const resultado = document.getElementById('resultado');
+        const alertEl = document.getElementById('consulta-alert');
+        const anioSelect = document.getElementById('anio');
+        const prefixSpan = document.getElementById('expediente-prefix');
+
+        // Update prefix when year changes
+        anioSelect.addEventListener('change', () => {
+            prefixSpan.textContent = `EXP-${anioSelect.value}-`;
+        });
+
+        // Solo números en campos numéricos
+        document.getElementById('numero').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        document.getElementById('dni').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        // Show/hide alert
+        function showAlert(message, type = 'error') {
+            alertEl.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <span>${message}</span>
+            `;
+            alertEl.className = `consulta-alert ${type}`;
+        }
+
+        function hideAlert() {
+            alertEl.className = 'consulta-alert';
+            alertEl.innerHTML = '';
+        }
+
+        // Get estado class
+        function getEstadoClass(estado) {
+            const clases = {
+                'pendiente': 'estado-pendiente',
+                'en_proceso': 'estado-en_proceso',
+                'observado': 'estado-observado',
+                'aprobado': 'estado-aprobado',
+                'rechazado': 'estado-rechazado'
+            };
+            return clases[estado] || 'estado-pendiente';
+        }
+
+        // Get timeline marker class
+        function getTimelineMarkerClass(estado) {
+            const clases = {
+                'pendiente': 'timeline-marker-warning',
+                'en_proceso': 'timeline-marker-info',
+                'observado': 'timeline-marker-warning',
+                'aprobado': 'timeline-marker-success',
+                'rechazado': 'timeline-marker-error'
+            };
+            return clases[estado] || '';
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('es-PE', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Show result
+        function showResult(data) {
+            // Header
+            document.getElementById('res-expediente').textContent = data.expediente;
+            document.getElementById('res-procedimiento').textContent = data.procedimiento;
+
+            // Estado badge
+            const badge = document.getElementById('res-estado-badge');
+            badge.className = `estado-badge ${getEstadoClass(data.estado)}`;
+            document.getElementById('res-estado-text').textContent = data.estado_descripcion;
+
+            // Info
+            document.getElementById('res-dependencia').textContent = data.dependencia || '-';
+            document.getElementById('res-fecha-inicio').textContent = formatDate(data.fecha_inicio);
+            document.getElementById('res-dias-transcurridos').textContent = `${data.dias_transcurridos} días`;
+
+            const diasRestantes = document.getElementById('res-dias-restantes');
+            diasRestantes.textContent = `${data.dias_restantes} días`;
+            diasRestantes.className = 'info-value' + (data.dias_restantes <= 3 ? ' urgente' : '');
+
+            // Progress
+            const progressPercent = Math.min(100, (data.dias_transcurridos / data.plazo_dias) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${progressPercent}%`;
+
+            progressBar.className = 'progress-bar-fill';
+            if (progressPercent >= 90) {
+                progressBar.classList.add('error');
+            } else if (progressPercent >= 70) {
+                progressBar.classList.add('warning');
+            } else {
+                progressBar.classList.add('success');
+            }
+
+            document.getElementById('progress-text-left').textContent = `${data.dias_transcurridos} días`;
+            document.getElementById('progress-text-right').textContent = `de ${data.plazo_dias} días`;
+
+            // Timeline
+            const timeline = document.getElementById('historial-timeline');
+            if (data.historial && data.historial.length > 0) {
+                timeline.innerHTML = data.historial.map(item => `
+                    <div class="timeline-item">
+                        <div class="timeline-marker ${getTimelineMarkerClass(item.estado)}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-title">${App.getEstadoText(item.estado)}</span>
+                                <span class="timeline-date">${formatDate(item.fecha)}</span>
+                            </div>
+                            ${item.comentario ? `<div class="timeline-body">${App.escapeHtml(item.comentario)}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                timeline.innerHTML = '<div class="historial-empty">No hay historial disponible</div>';
+            }
+
+            // Show result, hide form
+            formCard.style.display = 'none';
+            resultado.classList.add('show');
+        }
+
+        // Submit form
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const anio = anioSelect.value;
+            const numero = document.getElementById('numero').value.trim().padStart(5, '0');
+            const dni = document.getElementById('dni').value.trim();
+
+            if (!anio) {
+                showAlert('Seleccione el año del expediente');
+                return;
+            }
+
+            if (!numero || numero.length !== 5) {
+                showAlert('Ingrese un número de expediente válido (5 dígitos)');
+                return;
+            }
+
+            if (!dni || dni.length !== 8) {
+                showAlert('Ingrese un DNI válido (8 dígitos)');
+                return;
+            }
+
+            const expediente = `EXP-${anio}-${numero}`;
+
+            const btn = document.getElementById('btn-consultar');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner spinner-sm"></span> Consultando...';
+
+            try {
+                const response = await API.get('tramites/consulta-publica.php', {
+                    expediente: expediente,
+                    dni: dni
+                });
+
+                if (response.success) {
+                    showResult(response.data);
+                } else {
+                    showAlert(response.message || 'No se encontró el trámite');
+                }
+            } catch (error) {
+                showAlert(error.message || 'Error al consultar el trámite');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Consultar estado
+                `;
+            }
+        });
+
+        // Nueva consulta
+        document.getElementById('btn-nueva-consulta').addEventListener('click', () => {
+            resultado.classList.remove('show');
+            formCard.style.display = 'block';
+            form.reset();
+            hideAlert();
+        });
+    </script>
+</body>
+</html>

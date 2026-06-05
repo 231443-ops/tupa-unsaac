@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Iniciar sesión - TUPA UNSAAC">
+    <title>Iniciar Sesión - TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+        }
+
+        .auth-sidebar {
+            display: none;
+            flex: 1;
+            padding: var(--space-8);
+            color: var(--text-inverse);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .auth-sidebar-content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-sidebar-title {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-bold);
+            margin-bottom: var(--space-4);
+        }
+
+        .auth-sidebar-text {
+            font-size: var(--text-lg);
+            opacity: 0.9;
+            line-height: var(--leading-relaxed);
+        }
+
+        .auth-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+            background: var(--bg-secondary);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        .auth-header {
+            text-align: center;
+            padding: var(--space-8) var(--space-6) var(--space-4);
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--color-primary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-4);
+            color: white;
+            font-size: var(--text-2xl);
+            font-weight: var(--font-bold);
+        }
+
+        .auth-title {
+            font-size: var(--text-xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-1);
+        }
+
+        .auth-subtitle {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+        }
+
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--color-gray-200);
+            margin: 0 var(--space-6);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: var(--space-3) var(--space-4);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--text-tertiary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: color var(--transition-fast);
+        }
+
+        .auth-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .auth-tab.active {
+            color: var(--color-primary);
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-primary);
+        }
+
+        .auth-body {
+            padding: var(--space-6);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Password toggle */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: var(--space-3);
+            top: 50%;
+            transform: translateY(-50%);
+            padding: var(--space-1);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        .password-wrapper .form-input {
+            padding-right: var(--space-10);
+        }
+
+        /* Links */
+        .auth-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+            font-size: var(--text-sm);
+        }
+
+        .auth-link {
+            color: var(--color-primary);
+            font-weight: var(--font-medium);
+        }
+
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+
+        .auth-footer {
+            text-align: center;
+            padding: var(--space-4) var(--space-6) var(--space-6);
+            border-top: 1px solid var(--color-gray-100);
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+        }
+
+        .auth-footer a {
+            color: var(--color-primary);
+            font-weight: var(--font-semibold);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--text-tertiary);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-4);
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Alert inline */
+        .auth-alert {
+            display: none;
+            padding: var(--space-3);
+            border-radius: var(--radius-lg);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-4);
+        }
+
+        .auth-alert.error {
+            display: block;
+            background: var(--color-error-light);
+            color: var(--color-error-dark);
+            border: 1px solid var(--color-error);
+        }
+
+        @media (min-width: 1024px) {
+            .auth-sidebar {
+                display: flex;
+                max-width: 500px;
+            }
+
+            .auth-main {
+                padding: var(--space-8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        <!-- Sidebar decorativo -->
+        <aside class="auth-sidebar">
+            <div class="auth-sidebar-content">
+                <h1 class="auth-sidebar-title">Bienvenido al sistema de trámites UNSAAC</h1>
+                <p class="auth-sidebar-text">
+                    Gestiona tus trámites universitarios de manera rápida, segura y desde cualquier lugar.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="auth-main">
+            <div class="auth-container">
+                <a href="index.html" class="back-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Volver al inicio
+                </a>
+
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <div class="auth-logo">U</div>
+                        <h2 class="auth-title">Iniciar Sesión</h2>
+                        <p class="auth-subtitle">Accede a tu cuenta TUPA UNSAAC</p>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-tab="unsaac">Comunidad UNSAAC</button>
+                        <button class="auth-tab" data-tab="publico">Público general</button>
+                    </div>
+
+                    <div class="auth-body">
+                        <!-- Alert para errores -->
+                        <div class="auth-alert" id="login-alert"></div>
+
+                        <!-- Tab: Comunidad UNSAAC -->
+                        <div class="tab-content active" id="tab-unsaac">
+                            <form id="form-unsaac">
+                                <div class="form-group">
+                                    <label class="form-label" for="codigo-unsaac">Código institucional</label>
+                                    <input
+                                        type="text"
+                                        id="codigo-unsaac"
+                                        class="form-input"
+                                        placeholder="Ej: 180123"
+                                        maxlength="10"
+                                        autocomplete="username"
+                                    >
+                                    <p class="form-helper">Código de estudiante, docente o administrativo</p>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="password-unsaac">Contraseña</label>
+                                    <div class="password-wrapper">
+                                        <input
+                                            type="password"
+                                            id="password-unsaac"
+                                            class="form-input"
+                                            placeholder="Ingrese su contraseña"
+                                            autocomplete="current-password"
+                                        >
+                                        <button type="button" class="password-toggle" data-target="password-unsaac" aria-label="Mostrar contraseña">
+                                            <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            <svg class="icon-eye-off" style="display:none" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="auth-links">
+                                    <label class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="remember-unsaac">
+                                        <span class="form-check-label">Recordarme</span>
+                                    </label>
+                                    <a href="#" class="auth-link">¿Olvidaste tu contraseña?</a>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-unsaac">
+                                    Iniciar sesión
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Tab: Público general -->
+                        <div class="tab-content" id="tab-publico">
+                            <form id="form-publico">
+                                <div class="form-group">
+                                    <label class="form-label" for="dni-publico">DNI</label>
+                                    <input
+                                        type="text"
+                                        id="dni-publico"
+                                        class="form-input"
+                                        placeholder="Ingrese su DNI"
+                                        maxlength="8"
+                                        pattern="[0-9]{8}"
+                                        autocomplete="username"
+                                    >
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="password-publico">Contraseña</label>
+                                    <div class="password-wrapper">
+                                        <input
+                                            type="password"
+                                            id="password-publico"
+                                            class="form-input"
+                                            placeholder="Ingrese su contraseña"
+                                            autocomplete="current-password"
+                                        >
+                                        <button type="button" class="password-toggle" data-target="password-publico" aria-label="Mostrar contraseña">
+                                            <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            <svg class="icon-eye-off" style="display:none" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="auth-links">
+                                    <label class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="remember-publico">
+                                        <span class="form-check-label">Recordarme</span>
+                                    </label>
+                                    <a href="#" class="auth-link">¿Olvidaste tu contraseña?</a>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-login-publico">
+                                    Iniciar sesión
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="auth-footer">
+                        ¿No tienes cuenta? <a href="register.html">Regístrate aquí</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Tab switching
+        const tabs = document.querySelectorAll('.auth-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const alertEl = document.getElementById('login-alert');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetId = tab.dataset.tab;
+
+                // Update tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `tab-${targetId}`) {
+                        content.classList.add('active');
+                    }
+                });
+
+                // Clear alert
+                hideAlert();
+            });
+        });
+
+        // Password toggle
+        document.querySelectorAll('.password-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                const iconEye = btn.querySelector('.icon-eye');
+                const iconEyeOff = btn.querySelector('.icon-eye-off');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    iconEye.style.display = 'none';
+                    iconEyeOff.style.display = 'block';
+                } else {
+                    input.type = 'password';
+                    iconEye.style.display = 'block';
+                    iconEyeOff.style.display = 'none';
+                }
+            });
+        });
+
+        // Show/hide alert
+        function showAlert(message) {
+            alertEl.textContent = message;
+            alertEl.classList.add('error');
+        }
+
+        function hideAlert() {
+            alertEl.textContent = '';
+            alertEl.classList.remove('error');
+        }
+
+        // Set button loading state
+        function setLoading(btn, loading) {
+            if (loading) {
+                btn.disabled = true;
+                btn.dataset.originalText = btn.textContent;
+                btn.innerHTML = '<span class="spinner spinner-sm" style="border-top-color: white;"></span> Ingresando...';
+            } else {
+                btn.disabled = false;
+                btn.textContent = btn.dataset.originalText || 'Iniciar sesión';
+            }
+        }
+
+        // Handle login
+        async function handleLogin(email, password, btn) {
+            hideAlert();
+            setLoading(btn, true);
+
+            try {
+                const response = await API.post('auth/login.php', { email, password });
+
+                if (response.success) {
+                    // Guardar sesión
+                    sessionStorage.setItem('tupa_session', JSON.stringify({
+                        token: response.data.id,
+                        timestamp: Date.now()
+                    }));
+                    sessionStorage.setItem('tupa_user', JSON.stringify(response.data));
+
+                    // Redirigir
+                    const redirect = sessionStorage.getItem('tupa_redirect');
+                    if (redirect) {
+                        sessionStorage.removeItem('tupa_redirect');
+                        window.location.href = redirect;
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    showAlert(response.message || 'Error al iniciar sesión');
+                }
+            } catch (error) {
+                showAlert(error.message || 'Error de conexión');
+            } finally {
+                setLoading(btn, false);
+            }
+        }
+
+        // Form UNSAAC
+        document.getElementById('form-unsaac').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const codigo = document.getElementById('codigo-unsaac').value.trim();
+            const password = document.getElementById('password-unsaac').value;
+            const btn = document.getElementById('btn-login-unsaac');
+
+            if (!codigo) {
+                showAlert('Ingrese su código institucional');
+                return;
+            }
+
+            if (!password) {
+                showAlert('Ingrese su contraseña');
+                return;
+            }
+
+            // Usar código como email (el backend acepta email)
+            await handleLogin(codigo + '@unsaac.edu.pe', password, btn);
+        });
+
+        // Form Público
+        document.getElementById('form-publico').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const dni = document.getElementById('dni-publico').value.trim();
+            const password = document.getElementById('password-publico').value;
+            const btn = document.getElementById('btn-login-publico');
+
+            if (!dni || dni.length !== 8) {
+                showAlert('Ingrese un DNI válido de 8 dígitos');
+                return;
+            }
+
+            if (!password) {
+                showAlert('Ingrese su contraseña');
+                return;
+            }
+
+            // Usar DNI como email (el backend acepta email)
+            await handleLogin(dni + '@dni.pe', password, btn);
+        });
+
+        // Solo permitir números en DNI
+        document.getElementById('dni-publico').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        // Check if already logged in
+        const session = sessionStorage.getItem('tupa_session');
+        if (session) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
