@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Trámite - TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .wizard { max-width: 720px; margin: 0 auto; }
+
+        /* Stepper */
+        .stepper {
+            display: flex;
+            margin-bottom: var(--space-8);
+        }
+        .stepper-step { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .stepper-step:not(:last-child)::after {
+            content: ''; position: absolute; top: 16px; left: calc(50% + 18px);
+            width: calc(100% - 36px); height: 2px; background: var(--color-gray-300);
+        }
+        .stepper-step.completed:not(:last-child)::after,
+        .stepper-step.active:not(:last-child)::after { background: var(--color-primary); }
+        .stepper-circle {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--color-gray-200); color: var(--text-tertiary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: var(--text-sm); font-weight: var(--font-semibold);
+            z-index: 1; transition: all var(--transition-fast);
+        }
+        .stepper-step.active .stepper-circle,
+        .stepper-step.completed .stepper-circle { background: var(--color-primary); color: white; }
+        .stepper-label { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: var(--space-2); text-align: center; }
+        .stepper-step.active .stepper-label { color: var(--color-primary); font-weight: var(--font-medium); }
+
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+
+        /* Procedimiento search */
+        .proc-search { position: relative; margin-bottom: var(--space-4); }
+        .proc-search .input-group-icon { position:absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--color-gray-400); }
+        .proc-search .form-input { padding-left: var(--space-10); }
+
+        .chips { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-4); }
+        .chip {
+            padding: var(--space-1) var(--space-3); font-size: var(--text-sm);
+            border: 1px solid var(--color-gray-300); border-radius: var(--radius-full);
+            background: var(--bg-primary); color: var(--text-secondary); cursor: pointer;
+            transition: all var(--transition-fast); white-space: nowrap;
+        }
+        .chip:hover { border-color: var(--color-primary); }
+        .chip.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+        .proc-list { display: flex; flex-direction: column; gap: var(--space-2); max-height: 360px; overflow-y: auto; }
+        .proc-item {
+            display: flex; align-items: flex-start; gap: var(--space-3);
+            padding: var(--space-4); border: 2px solid var(--color-gray-200);
+            border-radius: var(--radius-lg); cursor: pointer; transition: all var(--transition-fast);
+        }
+        .proc-item:hover { border-color: var(--color-gray-400); }
+        .proc-item.selected { border-color: var(--color-primary); background: var(--color-primary-50); }
+        .proc-radio {
+            width: 20px; height: 20px; border-radius: 50%;
+            border: 2px solid var(--color-gray-300); flex-shrink: 0; margin-top: 2px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .proc-item.selected .proc-radio { border-color: var(--color-primary); }
+        .proc-item.selected .proc-radio::after {
+            content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary);
+        }
+        .proc-name { font-size: var(--text-sm); font-weight: var(--font-semibold); color: var(--text-primary); }
+        .proc-meta { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: var(--space-1); display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed var(--color-gray-300); border-radius: var(--radius-xl);
+            padding: var(--space-8); text-align: center; cursor: pointer;
+            transition: all var(--transition-fast); background: var(--color-gray-50);
+        }
+        .dropzone:hover, .dropzone.dragover { border-color: var(--color-primary); background: var(--color-primary-50); }
+        .dropzone-icon { color: var(--color-gray-400); margin-bottom: var(--space-3); }
+        .dropzone.dragover .dropzone-icon { color: var(--color-primary); }
+        .dropzone-text { font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-1); }
+        .dropzone-hint { font-size: var(--text-xs); color: var(--text-tertiary); }
+
+        .uploaded-files { margin-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+        .uploaded-file {
+            display: flex; align-items: center; gap: var(--space-3);
+            padding: var(--space-3); border: 1px solid var(--color-gray-200); border-radius: var(--radius-lg);
+        }
+        .uploaded-file-icon { width: 36px; height: 36px; background: var(--color-primary-50); color: var(--color-primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .uploaded-file-info { flex: 1; min-width: 0; }
+        .uploaded-file-name { font-size: var(--text-sm); font-weight: var(--font-medium); }
+        .uploaded-file-size { font-size: var(--text-xs); color: var(--text-tertiary); }
+        .uploaded-file-remove { background: none; border: none; cursor: pointer; color: var(--text-tertiary); padding: var(--space-1); }
+        .uploaded-file-remove:hover { color: var(--color-error); }
+
+        /* Confirmation */
+        .confirm-section { margin-bottom: var(--space-4); }
+        .confirm-label { font-size: var(--text-xs); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2); }
+        .confirm-box { padding: var(--space-4); background: var(--color-gray-50); border-radius: var(--radius-lg); }
+
+        .wizard-actions { display: flex; gap: var(--space-3); margin-top: var(--space-6); }
+        .wizard-actions .btn { flex: 1; }
+
+        .step-title { font-size: var(--text-lg); font-weight: var(--font-semibold); margin-bottom: var(--space-1); }
+        .step-subtitle { font-size: var(--text-sm); color: var(--text-tertiary); margin-bottom: var(--space-6); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="navbar-toggle" id="sidebar-toggle" aria-label="Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="dashboard.html" class="navbar-brand">
+            <div class="navbar-avatar" style="border-radius: var(--radius-lg);">U</div>
+            <span>TUPA UNSAAC</span>
+        </a>
+        <div class="navbar-content">
+            <div></div>
+            <div class="navbar-actions">
+                <div class="navbar-user">
+                    <div class="navbar-avatar" id="user-avatar">U</div>
+                    <div class="navbar-user-info">
+                        <div class="navbar-user-name" id="user-name">Usuario</div>
+                        <div class="navbar-user-role" id="user-role">usuario</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Principal</div>
+                <a href="dashboard.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Panel
+                </a>
+                <a href="mis-tramites.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Mis trámites
+                </a>
+                <a href="tramite-nuevo.html" class="sidebar-link active">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Nuevo trámite
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Cuenta</div>
+                <a href="perfil.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Mi perfil
+                </a>
+                <a href="#" class="sidebar-link" id="logout-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar sesión
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-layout">
+        <main class="main-content">
+            <div class="wizard">
+                <h1 class="page-title">Nuevo trámite</h1>
+
+                <!-- Stepper -->
+                <div class="stepper">
+                    <div class="stepper-step active" data-step="1"><div class="stepper-circle">1</div><span class="stepper-label">Interesado</span></div>
+                    <div class="stepper-step" data-step="2"><div class="stepper-circle">2</div><span class="stepper-label">Procedimiento</span></div>
+                    <div class="stepper-step" data-step="3"><div class="stepper-circle">3</div><span class="stepper-label">Documentos</span></div>
+                    <div class="stepper-step" data-step="4"><div class="stepper-circle">4</div><span class="stepper-label">Confirmar</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Step 1: Interesado -->
+                        <div class="step active" data-step="1">
+                            <h2 class="step-title">Datos del interesado</h2>
+                            <p class="step-subtitle">Verifica que tus datos sean correctos</p>
+
+                            <div class="form-group">
+                                <label class="form-label">Nombre completo</label>
+                                <input type="text" id="i-nombre" class="form-input" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Correo electrónico</label>
+                                <input type="email" id="i-email" class="form-input" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de usuario</label>
+                                <input type="text" id="i-rol" class="form-input" readonly>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-primary" id="next-1">Continuar</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Procedimiento -->
+                        <div class="step" data-step="2">
+                            <h2 class="step-title">Selecciona el procedimiento</h2>
+                            <p class="step-subtitle">Busca y elige el trámite que deseas realizar</p>
+
+                            <div class="proc-search">
+                                <span class="input-group-icon">
+                                    <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                </span>
+                                <input type="text" id="proc-search" class="form-input" placeholder="Buscar procedimiento...">
+                            </div>
+
+                            <div class="chips" id="proc-chips">
+                                <button class="chip active" data-cat="">Todos</button>
+                            </div>
+
+                            <div class="proc-list" id="proc-list">
+                                <div style="text-align:center; padding: var(--space-6);">
+                                    <div class="spinner" style="margin: 0 auto;"></div>
+                                </div>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-secondary" id="prev-2">Atrás</button>
+                                <button type="button" class="btn btn-primary" id="next-2">Continuar</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Documentos -->
+                        <div class="step" data-step="3">
+                            <h2 class="step-title">Adjunta tus documentos</h2>
+                            <p class="step-subtitle">Sube los archivos requeridos (PDF, JPG, PNG - máx 10MB)</p>
+
+                            <div class="dropzone" id="dropzone">
+                                <div class="dropzone-icon">
+                                    <svg width="48" height="48" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                </div>
+                                <p class="dropzone-text">Arrastra archivos aquí o haz clic para seleccionar</p>
+                                <p class="dropzone-hint">PDF, JPG, PNG · Máximo 10MB por archivo</p>
+                                <input type="file" id="dropzone-input" accept=".pdf,.jpg,.jpeg,.png" multiple style="display:none;">
+                            </div>
+
+                            <div class="uploaded-files" id="uploaded-files"></div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-secondary" id="prev-3">Atrás</button>
+                                <button type="button" class="btn btn-primary" id="next-3">Continuar</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Confirmar -->
+                        <div class="step" data-step="4">
+                            <h2 class="step-title">Confirma tu solicitud</h2>
+                            <p class="step-subtitle">Revisa los datos antes de enviar</p>
+
+                            <div class="confirm-section">
+                                <div class="confirm-label">Interesado</div>
+                                <div class="confirm-box" id="c-interesado">-</div>
+                            </div>
+                            <div class="confirm-section">
+                                <div class="confirm-label">Procedimiento</div>
+                                <div class="confirm-box" id="c-procedimiento">-</div>
+                            </div>
+                            <div class="confirm-section">
+                                <div class="confirm-label">Documentos adjuntos</div>
+                                <div class="confirm-box" id="c-documentos">-</div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: var(--space-4);">
+                                <label class="form-label" for="observaciones">Observaciones (opcional)</label>
+                                <textarea id="observaciones" class="form-textarea" placeholder="Información adicional para tu trámite..."></textarea>
+                            </div>
+
+                            <div class="wizard-actions">
+                                <button type="button" class="btn btn-secondary" id="prev-4">Atrás</button>
+                                <button type="button" class="btn btn-primary" id="submit-tramite">
+                                    Enviar solicitud
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const user = App.checkAuth();
+        if (user) {
+            document.getElementById('user-avatar').textContent = (user.nombre || 'U').charAt(0).toUpperCase();
+            document.getElementById('user-name').textContent = user.nombre || 'Usuario';
+            document.getElementById('user-role').textContent = user.rol || 'usuario';
+
+            // Step 1 autocompletado
+            document.getElementById('i-nombre').value = user.nombre || '';
+            document.getElementById('i-email').value = user.email || '';
+            document.getElementById('i-rol').value = (user.rol || 'usuario').charAt(0).toUpperCase() + (user.rol || 'usuario').slice(1);
+        }
+
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            App.logout();
+        });
+
+        // State
+        let currentStep = 1;
+        let allProcs = [];
+        let selectedProc = null;
+        let selectedFiles = [];
+        let currentCat = '';
+        let searchTerm = '';
+
+        const stepperSteps = document.querySelectorAll('.stepper-step');
+        const steps = document.querySelectorAll('.step');
+
+        function goToStep(step) {
+            currentStep = step;
+            stepperSteps.forEach((s, i) => {
+                s.classList.remove('active', 'completed');
+                if (i + 1 < step) s.classList.add('completed');
+                else if (i + 1 === step) s.classList.add('active');
+            });
+            steps.forEach(s => {
+                s.classList.toggle('active', s.dataset.step == step);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Load categorias + procedimientos
+        async function loadCategorias() {
+            try {
+                const response = await API.get('tupa/categorias.php');
+                if (response.success) {
+                    const chips = document.getElementById('proc-chips');
+                    response.data.forEach(cat => {
+                        const chip = document.createElement('button');
+                        chip.className = 'chip';
+                        chip.dataset.cat = cat.id;
+                        chip.textContent = cat.nombre;
+                        chips.appendChild(chip);
+                    });
+                    bindChips();
+                }
+            } catch (e) { /* silent */ }
+        }
+
+        async function loadProcedimientos() {
+            const list = document.getElementById('proc-list');
+            list.innerHTML = '<div style="text-align:center; padding: var(--space-6);"><div class="spinner" style="margin:0 auto;"></div></div>';
+
+            try {
+                const params = {};
+                if (searchTerm) params.q = searchTerm;
+                if (currentCat) params.categoria = currentCat;
+
+                const response = await API.get('tupa/procedimientos.php', params);
+                if (response.success) {
+                    allProcs = response.data.procedimientos;
+                    renderProcs();
+                }
+            } catch (error) {
+                list.innerHTML = `<p class="text-muted" style="text-align:center; padding: var(--space-4);">${error.message}</p>`;
+            }
+        }
+
+        function renderProcs() {
+            const list = document.getElementById('proc-list');
+            if (allProcs.length === 0) {
+                list.innerHTML = '<p class="text-muted" style="text-align:center; padding: var(--space-6); font-size: var(--text-sm);">No se encontraron procedimientos</p>';
+                return;
+            }
+
+            list.innerHTML = allProcs.map(p => `
+                <div class="proc-item ${selectedProc && selectedProc.id === p.id ? 'selected' : ''}" data-id="${p.id}">
+                    <div class="proc-radio"></div>
+                    <div style="flex:1;">
+                        <div class="proc-name">${App.escapeHtml(p.nombre)}</div>
+                        <div class="proc-meta">
+                            <span>${App.escapeHtml(p.codigo)}</span>
+                            <span>${App.formatMoney(p.costo)}</span>
+                            <span>${p.plazo_dias} días</span>
+                            ${p.categoria_nombre ? `<span>${App.escapeHtml(p.categoria_nombre)}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            list.querySelectorAll('.proc-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = parseInt(item.dataset.id);
+                    selectedProc = allProcs.find(p => p.id === id);
+                    list.querySelectorAll('.proc-item').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                });
+            });
+        }
+
+        function bindChips() {
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentCat = chip.dataset.cat;
+                    loadProcedimientos();
+                });
+            });
+        }
+
+        document.getElementById('proc-search').addEventListener('input', App.debounce((e) => {
+            searchTerm = e.target.value.trim();
+            loadProcedimientos();
+        }, 350));
+
+        // Navigation
+        document.getElementById('next-1').addEventListener('click', () => {
+            goToStep(2);
+            if (allProcs.length === 0) loadProcedimientos();
+        });
+        document.getElementById('prev-2').addEventListener('click', () => goToStep(1));
+        document.getElementById('next-2').addEventListener('click', () => {
+            if (!selectedProc) {
+                App.showToast('Selecciona un procedimiento', 'warning');
+                return;
+            }
+            goToStep(3);
+        });
+        document.getElementById('prev-3').addEventListener('click', () => goToStep(2));
+        document.getElementById('next-3').addEventListener('click', () => {
+            buildConfirmation();
+            goToStep(4);
+        });
+        document.getElementById('prev-4').addEventListener('click', () => goToStep(3));
+
+        // Dropzone
+        const dropzone = document.getElementById('dropzone');
+        const dropzoneInput = document.getElementById('dropzone-input');
+
+        dropzone.addEventListener('click', () => dropzoneInput.click());
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        dropzoneInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleFiles(files) {
+            const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+            Array.from(files).forEach(file => {
+                if (!allowed.includes(file.type)) {
+                    App.showToast(`${file.name}: tipo no permitido`, 'error');
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    App.showToast(`${file.name}: excede 10MB`, 'error');
+                    return;
+                }
+                selectedFiles.push(file);
+            });
+            renderFiles();
+        }
+
+        function renderFiles() {
+            const container = document.getElementById('uploaded-files');
+            container.innerHTML = selectedFiles.map((f, i) => `
+                <div class="uploaded-file">
+                    <div class="uploaded-file-icon">
+                        <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    </div>
+                    <div class="uploaded-file-info">
+                        <div class="uploaded-file-name truncate">${App.escapeHtml(f.name)}</div>
+                        <div class="uploaded-file-size">${(f.size/1024).toFixed(1)} KB</div>
+                    </div>
+                    <button class="uploaded-file-remove" data-index="${i}">
+                        <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.uploaded-file-remove').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedFiles.splice(parseInt(btn.dataset.index), 1);
+                    renderFiles();
+                });
+            });
+        }
+
+        function buildConfirmation() {
+            document.getElementById('c-interesado').innerHTML = `
+                <strong>${App.escapeHtml(user.nombre)}</strong><br>
+                <span class="text-muted" style="font-size: var(--text-sm);">${App.escapeHtml(user.email)}</span>
+            `;
+            document.getElementById('c-procedimiento').innerHTML = `
+                <strong>${App.escapeHtml(selectedProc.nombre)}</strong><br>
+                <span class="text-muted" style="font-size: var(--text-sm);">${selectedProc.codigo} · ${App.formatMoney(selectedProc.costo)} · ${selectedProc.plazo_dias} días</span>
+            `;
+            document.getElementById('c-documentos').innerHTML = selectedFiles.length > 0
+                ? selectedFiles.map(f => `<div style="font-size: var(--text-sm);">📎 ${App.escapeHtml(f.name)}</div>`).join('')
+                : '<span class="text-muted" style="font-size: var(--text-sm);">Sin documentos adjuntos</span>';
+        }
+
+        // Submit
+        document.getElementById('submit-tramite').addEventListener('click', async () => {
+            const btn = document.getElementById('submit-tramite');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner spinner-sm" style="border-top-color:white;"></span> Enviando...';
+
+            try {
+                // 1. Create tramite
+                const response = await API.post('tramites/crear.php', {
+                    procedimiento_id: selectedProc.id,
+                    observaciones: document.getElementById('observaciones').value.trim()
+                });
+
+                if (response.success) {
+                    const tramiteId = response.data.id;
+
+                    // 2. Upload files
+                    for (const file of selectedFiles) {
+                        const formData = new FormData();
+                        formData.append('tramite_id', tramiteId);
+                        formData.append('archivo', file);
+                        try {
+                            await API.upload('tramites/subir-archivo.php', formData);
+                        } catch (e) {
+                            console.error('Error subiendo archivo:', e);
+                        }
+                    }
+
+                    App.showToast('Trámite creado exitosamente', 'success');
+                    setTimeout(() => {
+                        window.location.href = `detalle.html?id=${tramiteId}`;
+                    }, 1000);
+                } else {
+                    App.showToast(response.message, 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Enviar solicitud';
+                }
+            } catch (error) {
+                App.showToast(error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Enviar solicitud';
+            }
+        });
+
+        loadCategorias();
+    </script>
+</body>
+</html>

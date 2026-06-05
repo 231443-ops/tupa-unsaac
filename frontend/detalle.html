@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Trámite - TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-6);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            margin-bottom: var(--space-4);
+        }
+
+        .back-btn:hover { color: var(--text-primary); }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .detail-expediente {
+            font-size: var(--text-2xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+        }
+
+        .detail-proc {
+            font-size: var(--text-base);
+            color: var(--text-tertiary);
+            margin-top: var(--space-1);
+        }
+
+        .info-list { display: flex; flex-direction: column; gap: var(--space-3); }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-2) 0;
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row-label { font-size: var(--text-sm); color: var(--text-tertiary); }
+        .info-row-value { font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--text-primary); text-align: right; }
+
+        /* Payment */
+        .payment-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            background: var(--color-gray-50);
+        }
+        .payment-amount { font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--color-primary); }
+
+        /* Files */
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-2);
+        }
+        .file-icon {
+            width: 40px; height: 40px;
+            background: var(--color-primary-50);
+            color: var(--color-primary);
+            border-radius: var(--radius-lg);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .file-info { flex: 1; min-width: 0; }
+        .file-name { font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--text-primary); }
+        .file-meta { font-size: var(--text-xs); color: var(--text-tertiary); }
+
+        @media (min-width: 1024px) {
+            .detail-grid { grid-template-columns: 1fr 380px; align-items: start; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="navbar-toggle" id="sidebar-toggle" aria-label="Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="dashboard.html" class="navbar-brand">
+            <div class="navbar-avatar" style="border-radius: var(--radius-lg);">U</div>
+            <span>TUPA UNSAAC</span>
+        </a>
+        <div class="navbar-content">
+            <div></div>
+            <div class="navbar-actions">
+                <div class="navbar-user">
+                    <div class="navbar-avatar" id="user-avatar">U</div>
+                    <div class="navbar-user-info">
+                        <div class="navbar-user-name" id="user-name">Usuario</div>
+                        <div class="navbar-user-role" id="user-role">usuario</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Principal</div>
+                <a href="dashboard.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Panel
+                </a>
+                <a href="mis-tramites.html" class="sidebar-link active">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Mis trámites
+                </a>
+                <a href="tramite-nuevo.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Nuevo trámite
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Cuenta</div>
+                <a href="perfil.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Mi perfil
+                </a>
+                <a href="#" class="sidebar-link" id="logout-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar sesión
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-layout">
+        <main class="main-content">
+            <a href="mis-tramites.html" class="back-btn">
+                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Volver a mis trámites
+            </a>
+
+            <!-- Loading -->
+            <div id="loading" style="text-align:center; padding: var(--space-12);">
+                <div class="spinner spinner-lg" style="margin: 0 auto;"></div>
+            </div>
+
+            <!-- Error -->
+            <div class="empty-state" id="error-state" style="display:none;">
+                <div class="empty-state-icon">
+                    <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </div>
+                <h3 class="empty-state-title">Trámite no encontrado</h3>
+                <p class="empty-state-message" id="error-msg">No se pudo cargar el trámite solicitado.</p>
+                <a href="mis-tramites.html" class="btn btn-primary">Volver</a>
+            </div>
+
+            <!-- Content -->
+            <div id="content" style="display:none;">
+                <div class="detail-header">
+                    <div>
+                        <div class="detail-expediente" id="d-expediente">EXP-2026-00001</div>
+                        <div class="detail-proc" id="d-proc">Procedimiento</div>
+                    </div>
+                    <span class="badge" id="d-estado" style="font-size: var(--text-sm); padding: var(--space-2) var(--space-4);">Estado</span>
+                </div>
+
+                <div class="detail-grid">
+                    <!-- Left column -->
+                    <div style="display:flex; flex-direction:column; gap: var(--space-6);">
+                        <!-- Timeline -->
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Seguimiento del trámite</h3></div>
+                            <div class="card-body">
+                                <div class="timeline" id="timeline"></div>
+                            </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <div class="card">
+                            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                                <h3 class="card-title">Documentos adjuntos</h3>
+                                <button class="btn btn-outline btn-sm" id="btn-upload">
+                                    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    Subir
+                                </button>
+                                <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png" style="display:none;">
+                            </div>
+                            <div class="card-body">
+                                <div id="files-list"></div>
+                                <div id="files-empty" class="text-muted" style="text-align:center; padding: var(--space-4); font-size: var(--text-sm);">
+                                    No hay documentos adjuntos
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right column -->
+                    <div style="display:flex; flex-direction:column; gap: var(--space-6);">
+                        <!-- Info -->
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Información</h3></div>
+                            <div class="card-body">
+                                <div class="info-list">
+                                    <div class="info-row">
+                                        <span class="info-row-label">Dependencia</span>
+                                        <span class="info-row-value" id="d-dependencia">-</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-row-label">Código</span>
+                                        <span class="info-row-value" id="d-codigo">-</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-row-label">Fecha inicio</span>
+                                        <span class="info-row-value" id="d-fecha">-</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-row-label">Plazo</span>
+                                        <span class="info-row-value" id="d-plazo">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment -->
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Estado de pago</h3></div>
+                            <div class="card-body">
+                                <div class="payment-box">
+                                    <div>
+                                        <div class="text-muted" style="font-size: var(--text-xs);">Costo del trámite</div>
+                                        <div class="payment-amount" id="d-costo">S/. 0.00</div>
+                                    </div>
+                                    <span class="badge badge-success" id="d-pago-estado">Sin costo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Requisitos -->
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Requisitos</h3></div>
+                            <div class="card-body">
+                                <p style="font-size: var(--text-sm); color: var(--text-secondary); white-space: pre-line;" id="d-requisitos">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const user = App.checkAuth();
+        if (user) {
+            document.getElementById('user-avatar').textContent = (user.nombre || 'U').charAt(0).toUpperCase();
+            document.getElementById('user-name').textContent = user.nombre || 'Usuario';
+            document.getElementById('user-role').textContent = user.rol || 'usuario';
+        }
+
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            App.logout();
+        });
+
+        const tramiteId = App.getUrlParam('id');
+
+        function timelineMarker(estado) {
+            const m = {
+                'pendiente': 'timeline-marker-warning',
+                'en_proceso': 'timeline-marker-info',
+                'observado': 'timeline-marker-warning',
+                'aprobado': 'timeline-marker-success',
+                'rechazado': 'timeline-marker-error'
+            };
+            return m[estado] || 'timeline-marker-primary';
+        }
+
+        function fileIcon() {
+            return `<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>`;
+        }
+
+        async function loadDetalle() {
+            if (!tramiteId) {
+                showError('No se especificó un trámite');
+                return;
+            }
+
+            try {
+                const response = await API.get('tramites/detalle.php', { id: tramiteId });
+                document.getElementById('loading').style.display = 'none';
+
+                if (response.success) {
+                    render(response.data);
+                } else {
+                    showError(response.message);
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                showError(error.message);
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('error-msg').textContent = msg || 'Error al cargar';
+            document.getElementById('error-state').style.display = 'flex';
+        }
+
+        function render(data) {
+            const t = data.tramite;
+            document.getElementById('content').style.display = 'block';
+
+            // Header
+            document.getElementById('d-expediente').textContent = t.numero_expediente;
+            document.getElementById('d-proc').textContent = t.procedimiento_nombre;
+
+            const badge = document.getElementById('d-estado');
+            badge.className = `badge badge-${t.estado}`;
+            badge.style.fontSize = 'var(--text-sm)';
+            badge.style.padding = 'var(--space-2) var(--space-4)';
+            badge.textContent = App.getEstadoText(t.estado);
+
+            // Info
+            document.getElementById('d-dependencia').textContent = t.dependencia || '-';
+            document.getElementById('d-codigo').textContent = t.procedimiento_codigo || '-';
+            document.getElementById('d-fecha').textContent = App.formatDate(t.fecha_inicio, {day:'numeric', month:'long', year:'numeric'});
+            document.getElementById('d-plazo').textContent = `${t.plazo_dias} días`;
+            document.getElementById('d-requisitos').textContent = t.requisitos || 'No especificados';
+
+            // Payment
+            const costo = parseFloat(t.costo) || 0;
+            document.getElementById('d-costo').textContent = App.formatMoney(costo);
+            const pagoBadge = document.getElementById('d-pago-estado');
+            if (costo === 0) {
+                pagoBadge.className = 'badge badge-success';
+                pagoBadge.textContent = 'Sin costo';
+            } else {
+                pagoBadge.className = 'badge badge-warning';
+                pagoBadge.textContent = 'Pendiente';
+            }
+
+            // Timeline
+            const timeline = document.getElementById('timeline');
+            if (data.historial && data.historial.length > 0) {
+                timeline.innerHTML = data.historial.map(h => `
+                    <div class="timeline-item">
+                        <div class="timeline-marker ${timelineMarker(h.estado_nuevo)}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-title">${App.getEstadoText(h.estado_nuevo)}</span>
+                                <span class="timeline-date">${App.formatDateTime(h.created_at)}</span>
+                            </div>
+                            ${h.comentario ? `<div class="timeline-body">${App.escapeHtml(h.comentario)}</div>` : ''}
+                            ${h.usuario_nombre ? `<div class="timeline-author">Por: ${App.escapeHtml(h.usuario_nombre)}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                timeline.innerHTML = '<p class="text-muted" style="font-size: var(--text-sm);">Sin historial</p>';
+            }
+
+            // Files
+            renderFiles(data.archivos);
+        }
+
+        function renderFiles(archivos) {
+            const list = document.getElementById('files-list');
+            const empty = document.getElementById('files-empty');
+
+            if (archivos && archivos.length > 0) {
+                empty.style.display = 'none';
+                list.innerHTML = archivos.map(a => `
+                    <div class="file-item">
+                        <div class="file-icon">${fileIcon()}</div>
+                        <div class="file-info">
+                            <div class="file-name truncate">${App.escapeHtml(a.nombre_original)}</div>
+                            <div class="file-meta">${(a.tamanio/1024).toFixed(1)} KB · ${App.formatDate(a.created_at, {day:'numeric', month:'short'})}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                empty.style.display = 'block';
+                list.innerHTML = '';
+            }
+        }
+
+        // Upload
+        document.getElementById('btn-upload').addEventListener('click', () => {
+            document.getElementById('file-input').click();
+        });
+
+        document.getElementById('file-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+                App.showToast('El archivo excede 10MB', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('tramite_id', tramiteId);
+            formData.append('archivo', file);
+
+            App.showLoading('Subiendo archivo...');
+            try {
+                const response = await API.upload('tramites/subir-archivo.php', formData);
+                App.hideLoading();
+                if (response.success) {
+                    App.showToast('Archivo subido correctamente', 'success');
+                    loadDetalle();
+                }
+            } catch (error) {
+                App.hideLoading();
+                App.showToast(error.message, 'error');
+            }
+            e.target.value = '';
+        });
+
+        loadDetalle();
+    </script>
+</body>
+</html>

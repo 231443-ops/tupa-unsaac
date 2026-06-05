@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel - TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-3);
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.primary { background: var(--color-primary-50); color: var(--color-primary); }
+        .stat-icon.info { background: var(--color-info-light); color: var(--color-info-dark); }
+        .stat-icon.success { background: var(--color-success-light); color: var(--color-success-dark); }
+        .stat-icon.warning { background: var(--color-warning-light); color: var(--color-warning-dark); }
+
+        .stat-value {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-bold);
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            margin-top: var(--space-2);
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            color: white;
+            margin-bottom: var(--space-8);
+        }
+
+        .welcome-title {
+            font-size: var(--text-xl);
+            font-weight: var(--font-bold);
+            margin-bottom: var(--space-2);
+        }
+
+        .welcome-text {
+            font-size: var(--text-sm);
+            opacity: 0.9;
+            margin-bottom: var(--space-4);
+        }
+
+        .welcome-banner .btn {
+            background: white;
+            color: var(--color-primary);
+        }
+
+        .section-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <button class="navbar-toggle" id="sidebar-toggle" aria-label="Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="dashboard.html" class="navbar-brand">
+            <div class="navbar-avatar" style="border-radius: var(--radius-lg);">U</div>
+            <span>TUPA UNSAAC</span>
+        </a>
+        <div class="navbar-content">
+            <div></div>
+            <div class="navbar-actions">
+                <div class="navbar-user" id="navbar-user">
+                    <div class="navbar-avatar" id="user-avatar">U</div>
+                    <div class="navbar-user-info">
+                        <div class="navbar-user-name" id="user-name">Usuario</div>
+                        <div class="navbar-user-role" id="user-role">usuario</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Principal</div>
+                <a href="dashboard.html" class="sidebar-link active">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Panel
+                </a>
+                <a href="mis-tramites.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Mis trámites
+                </a>
+                <a href="tramite-nuevo.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Nuevo trámite
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Cuenta</div>
+                <a href="perfil.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Mi perfil
+                </a>
+                <a href="#" class="sidebar-link" id="logout-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar sesión
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-layout">
+        <main class="main-content">
+            <h1 class="page-title">Panel principal</h1>
+
+            <!-- Welcome banner -->
+            <div class="welcome-banner">
+                <h2 class="welcome-title">Hola, <span id="welcome-name">Usuario</span> 👋</h2>
+                <p class="welcome-text">Bienvenido a tu panel de trámites universitarios.</p>
+                <a href="tramite-nuevo.html" class="btn">Iniciar nuevo trámite</a>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon primary">
+                            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-activos">0</div>
+                    <div class="stat-label">Trámites activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon info">
+                            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-revision">0</div>
+                    <div class="stat-label">En revisión</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon success">
+                            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-completados">0</div>
+                    <div class="stat-label">Completados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon warning">
+                            <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="stat-observados">0</div>
+                    <div class="stat-label">Observados</div>
+                </div>
+            </div>
+
+            <!-- Recent / Empty state -->
+            <div class="section-row">
+                <h2 class="section-title" style="margin: 0;">Trámites recientes</h2>
+                <a href="mis-tramites.html" class="btn btn-ghost btn-sm">Ver todos</a>
+            </div>
+
+            <div class="card">
+                <div class="card-body" id="recent-container">
+                    <!-- Loading -->
+                    <div id="recent-loading" style="text-align:center; padding: var(--space-8);">
+                        <div class="spinner" style="margin: 0 auto;"></div>
+                    </div>
+
+                    <!-- Empty state -->
+                    <div class="empty-state" id="empty-state" style="display:none;">
+                        <div class="empty-state-icon">
+                            <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        </div>
+                        <h3 class="empty-state-title">Aún no tienes trámites</h3>
+                        <p class="empty-state-message">Explora el catálogo TUPA y comienza tu primer trámite universitario de forma rápida y sencilla.</p>
+                        <a href="tramite-nuevo.html" class="btn btn-primary">Ver catálogo TUPA</a>
+                    </div>
+
+                    <!-- List -->
+                    <div id="recent-list" style="display:none;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const user = App.checkAuth();
+
+        if (user) {
+            // Set user info
+            const initials = (user.nombre || 'U').charAt(0).toUpperCase();
+            document.getElementById('user-avatar').textContent = initials;
+            document.getElementById('user-name').textContent = user.nombre || 'Usuario';
+            document.getElementById('user-role').textContent = user.rol || 'usuario';
+            document.getElementById('welcome-name').textContent = (user.nombre || 'Usuario').split(' ')[0];
+        }
+
+        // Logout
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            App.logout();
+        });
+
+        // Load tramites
+        async function loadDashboard() {
+            try {
+                const response = await API.get('tramites/listar.php', { limit: 5 });
+
+                document.getElementById('recent-loading').style.display = 'none';
+
+                if (response.success && response.data.tramites.length > 0) {
+                    const tramites = response.data.tramites;
+
+                    // Calculate stats
+                    let activos = 0, revision = 0, completados = 0, observados = 0;
+                    tramites.forEach(t => {
+                        if (['pendiente', 'en_proceso'].includes(t.estado)) activos++;
+                        if (t.estado === 'en_proceso') revision++;
+                        if (t.estado === 'aprobado') completados++;
+                        if (t.estado === 'observado') observados++;
+                    });
+
+                    document.getElementById('stat-activos').textContent = activos;
+                    document.getElementById('stat-revision').textContent = revision;
+                    document.getElementById('stat-completados').textContent = completados;
+                    document.getElementById('stat-observados').textContent = observados;
+
+                    // Render list
+                    renderRecent(tramites);
+                } else {
+                    document.getElementById('empty-state').style.display = 'flex';
+                }
+            } catch (error) {
+                document.getElementById('recent-loading').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'flex';
+                App.showToast(error.message, 'error');
+            }
+        }
+
+        function renderRecent(tramites) {
+            const list = document.getElementById('recent-list');
+            list.style.display = 'block';
+            list.innerHTML = `<div class="table-container"><table class="table">
+                <thead><tr><th>Expediente</th><th>Procedimiento</th><th>Estado</th><th>Fecha</th></tr></thead>
+                <tbody>${tramites.map(t => `
+                    <tr style="cursor:pointer" onclick="location.href='detalle.html?id=${t.id}'">
+                        <td><strong>${App.escapeHtml(t.numero_expediente)}</strong></td>
+                        <td>${App.escapeHtml(t.procedimiento_nombre)}</td>
+                        <td><span class="badge badge-${t.estado}">${App.getEstadoText(t.estado)}</span></td>
+                        <td>${App.formatDate(t.fecha_inicio, {day:'numeric', month:'short', year:'numeric'})}</td>
+                    </tr>
+                `).join('')}</tbody>
+            </table></div>`;
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
