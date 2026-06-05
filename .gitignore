@@ -1,0 +1,36 @@
+# Archivos subidos por los usuarios
+backend/uploads/*
+!backend/uploads/.gitkeep
+!backend/uploads/.htaccess
+
+# Dependencias
+vendor/
+node_modules/
+
+# Variables de entorno y configuración local
+.env
+.env.local
+*.local.php
+backend/config/database.local.php
+
+# Logs
+*.log
+logs/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*~
+
+# Temporales y respaldos
+*.bak
+*.tmp
+*.cache

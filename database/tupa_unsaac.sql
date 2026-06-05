@@ -84,6 +84,44 @@ CREATE TABLE IF NOT EXISTS archivos_tramite (
     FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Tabla de pagos asociados a un trámite
+CREATE TABLE IF NOT EXISTS pagos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tramite_id INT NOT NULL,
+    monto DECIMAL(10,2) NOT NULL,
+    metodo ENUM('efectivo', 'transferencia', 'tarjeta') DEFAULT 'efectivo',
+    numero_operacion VARCHAR(50),
+    estado ENUM('pendiente', 'pagado', 'anulado') DEFAULT 'pendiente',
+    fecha_pago TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Tabla de notificaciones para los usuarios
+CREATE TABLE IF NOT EXISTS notificaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    tramite_id INT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    mensaje TEXT,
+    leida TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Tabla de comentarios/mensajes sobre un trámite
+CREATE TABLE IF NOT EXISTS comentarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tramite_id INT NOT NULL,
+    usuario_id INT NULL,
+    mensaje TEXT NOT NULL,
+    interno TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
 -- Foreign key de usuarios a dependencias (para operadores/jefes asignados)
 ALTER TABLE usuarios ADD FOREIGN KEY (dependencia_id) REFERENCES dependencias(id) ON DELETE SET NULL;
 
@@ -97,3 +135,27 @@ CREATE INDEX idx_tramites_expediente ON tramites(numero_expediente);
 CREATE INDEX idx_procedimientos_dependencia ON procedimientos(dependencia_id);
 CREATE INDEX idx_historial_tramite ON historial_estados(tramite_id);
 CREATE INDEX idx_archivos_tramite ON archivos_tramite(tramite_id);
+CREATE INDEX idx_pagos_tramite ON pagos(tramite_id);
+CREATE INDEX idx_notificaciones_usuario ON notificaciones(usuario_id);
+CREATE INDEX idx_comentarios_tramite ON comentarios(tramite_id);
+
+-- ============================================================
+-- Datos de prueba (seed)
+-- ============================================================
+
+-- Dependencias
+INSERT INTO dependencias (nombre, codigo, descripcion) VALUES
+('Facultad de Ingeniería Eléctrica, Electrónica, Informática y Mecánica', 'FIEEIM', 'Trámites académicos de la facultad'),
+('Oficina de Servicios Académicos', 'OSA', 'Constancias, certificados y registros académicos');
+
+-- Procedimientos del catálogo TUPA
+INSERT INTO procedimientos (codigo, nombre, descripcion, requisitos, dependencia_id, costo, plazo_dias, base_legal) VALUES
+('P-001', 'Constancia de matrícula', 'Emisión de constancia de matrícula del semestre vigente', 'Recibo de pago\nCopia de DNI', 2, 15.00, 5, 'Reglamento académico UNSAAC'),
+('P-002', 'Certificado de estudios', 'Certificado oficial de estudios por ciclo o consolidado', 'Recibo de pago\nCopia de DNI\nSolicitud dirigida al decano', 1, 35.00, 10, 'Reglamento académico UNSAAC');
+
+-- Usuarios de prueba
+-- admin@unsaac.edu.pe  -> contraseña: Admin123!
+-- 231443@unsaac.edu.pe -> contraseña: Student123!
+INSERT INTO usuarios (dni, nombre, email, password, rol, dependencia_id) VALUES
+('00000000', 'Administrador TUPA', 'admin@unsaac.edu.pe', '$2y$10$LCPZ0wYPy.R4ePUWCg8HjOwJJYaPRU/xsjA/Et.kbyJgvDlLC0.n2', 'admin', NULL),
+('23144300', 'Gerald Benjamín Huanto Ayma', '231443@unsaac.edu.pe', '$2y$10$TgtOAGC3J84U9QjnRJXAhuv0jhyXSvrckWl/ffWzXktc3BjMUW5o.', 'usuario', NULL);

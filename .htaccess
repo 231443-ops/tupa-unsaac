@@ -1,0 +1,11 @@
+# TUPA UNSAAC — redirección de la raíz del proyecto al frontend
+
+# Al pedir la raíz (p. ej. http://localhost/tupa-unsaac/) servir la app frontend
+DirectoryIndex frontend/index.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Solo la raíz exacta del proyecto -> frontend/index.html
+    RewriteRule ^$ frontend/index.html [L]
+</IfModule>
