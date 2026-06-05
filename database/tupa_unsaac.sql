@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'usuario', 'tramitador') DEFAULT 'usuario',
+    rol ENUM('admin', 'jefe', 'operador', 'usuario') DEFAULT 'usuario',
+    dependencia_id INT NULL,
     activo TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -83,9 +84,13 @@ CREATE TABLE IF NOT EXISTS archivos_tramite (
     FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Foreign key de usuarios a dependencias (para operadores/jefes asignados)
+ALTER TABLE usuarios ADD FOREIGN KEY (dependencia_id) REFERENCES dependencias(id) ON DELETE SET NULL;
+
 -- Índices para optimización
 CREATE INDEX idx_usuarios_email ON usuarios(email);
 CREATE INDEX idx_usuarios_dni ON usuarios(dni);
+CREATE INDEX idx_usuarios_dependencia ON usuarios(dependencia_id);
 CREATE INDEX idx_tramites_usuario ON tramites(usuario_id);
 CREATE INDEX idx_tramites_estado ON tramites(estado);
 CREATE INDEX idx_tramites_expediente ON tramites(numero_expediente);
