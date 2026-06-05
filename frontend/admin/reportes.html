@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Admin TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        .admin-badge { font-size: var(--text-xs); font-weight: var(--font-semibold); color: var(--color-primary); background: var(--color-primary-50); padding: 2px var(--space-2); border-radius: var(--radius-full); margin-left: var(--space-2); }
+        .report-toolbar { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; margin-bottom: var(--space-6); }
+        .report-toolbar .form-group { margin: 0; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6); }
+        .stat-card { background: var(--bg-primary); border: 1px solid var(--color-gray-200); border-radius: var(--radius-lg); padding: var(--space-5); }
+        .stat-card .num { font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--color-primary); }
+        .stat-card .lbl { font-size: var(--text-sm); color: var(--text-secondary); margin-top: var(--space-1); }
+        .charts-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-6); margin-bottom: var(--space-6); }
+        .chart-wrap { position: relative; height: 300px; }
+        @media (min-width: 992px) {
+            .charts-grid { grid-template-columns: 1fr 1fr; }
+            .charts-grid .full { grid-column: 1 / -1; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="navbar-toggle" id="sidebar-toggle" aria-label="Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="bandeja.html" class="navbar-brand">
+            <div class="navbar-avatar" style="border-radius: var(--radius-lg);">A</div>
+            <span>TUPA UNSAAC <span class="admin-badge">ADMIN</span></span>
+        </a>
+        <div class="navbar-content">
+            <div></div>
+            <div class="navbar-actions">
+                <div class="navbar-user">
+                    <div class="navbar-avatar" id="user-avatar">A</div>
+                    <div class="navbar-user-info">
+                        <div class="navbar-user-name" id="user-name">Administrador</div>
+                        <div class="navbar-user-role" id="user-role">admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Gestión</div>
+                <a href="bandeja.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"></path><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                    Bandeja de entrada
+                </a>
+                <a href="reportes.html" class="sidebar-link active">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Reportes
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Cuenta</div>
+                <a href="../dashboard.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Vista usuario
+                </a>
+                <a href="#" class="sidebar-link" id="logout-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar sesión
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-layout">
+        <main class="main-content">
+            <h1 class="page-title" style="margin-bottom: var(--space-2);">Reportes y estadísticas</h1>
+            <p class="text-muted" style="margin-bottom: var(--space-6);">Indicadores de gestión de trámites por periodo.</p>
+
+            <!-- Filtros -->
+            <div class="report-toolbar">
+                <div class="form-group">
+                    <label class="form-label" for="fecha-inicio">Desde</label>
+                    <input type="date" id="fecha-inicio" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fecha-fin">Hasta</label>
+                    <input type="date" id="fecha-fin" class="form-input">
+                </div>
+                <button class="btn btn-primary" id="btn-aplicar">Aplicar</button>
+            </div>
+
+            <div id="loading" style="text-align:center; padding: var(--space-8);">
+                <div class="spinner" style="margin: 0 auto;"></div>
+            </div>
+
+            <div id="report-content" style="display:none;">
+                <!-- Tarjetas resumen -->
+                <div class="stats-row" id="stats-row"></div>
+
+                <!-- Gráficos -->
+                <div class="charts-grid">
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title" style="margin:0;">Distribución por estado</h3></div>
+                        <div class="card-body"><div class="chart-wrap"><canvas id="chart-estado"></canvas></div></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title" style="margin:0;">Evolución mensual</h3></div>
+                        <div class="card-body"><div class="chart-wrap"><canvas id="chart-mes"></canvas></div></div>
+                    </div>
+                    <div class="card full" id="card-dependencia" style="display:none;">
+                        <div class="card-header"><h3 class="card-title" style="margin:0;">Trámites por dependencia</h3></div>
+                        <div class="card-body"><div class="chart-wrap" style="height:340px;"><canvas id="chart-dependencia"></canvas></div></div>
+                    </div>
+                </div>
+
+                <!-- Tabla de tiempos -->
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title" style="margin:0;">Tiempos de resolución por procedimiento</h3></div>
+                    <div class="card-body" id="tiempos-container">
+                        <p class="text-muted">Sin datos de trámites finalizados en el periodo.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        const user = Admin.requireAdmin();
+        if (user) Admin.initLayout(user);
+
+        const COLORS = {
+            pendiente: '#9ca3af',
+            en_proceso: '#3b82f6',
+            observado: '#f59e0b',
+            aprobado: '#10b981',
+            rechazado: '#ef4444',
+            primary: '#8B0000'
+        };
+
+        let charts = {};
+
+        function destroyCharts() {
+            Object.values(charts).forEach(c => { if (c) c.destroy(); });
+            charts = {};
+        }
+
+        // Inicializar fechas (año actual)
+        const hoy = new Date();
+        const inicioAnio = new Date(hoy.getFullYear(), 0, 1);
+        const fmt = (d) => d.toISOString().split('T')[0];
+        document.getElementById('fecha-inicio').value = fmt(inicioAnio);
+        document.getElementById('fecha-fin').value = fmt(hoy);
+
+        function getPeriodo() {
+            return {
+                fecha_inicio: document.getElementById('fecha-inicio').value,
+                fecha_fin: document.getElementById('fecha-fin').value
+            };
+        }
+
+        async function loadReportes() {
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('report-content');
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            destroyCharts();
+
+            const periodo = getPeriodo();
+
+            try {
+                // Cargar reportes en paralelo
+                const [resumen, porEstado, porMes, tiempos] = await Promise.all([
+                    API.get('admin/reportes.php', { tipo: 'resumen', ...periodo }),
+                    API.get('admin/reportes.php', { tipo: 'por_estado', ...periodo }),
+                    API.get('admin/reportes.php', { tipo: 'por_mes', ...periodo }),
+                    API.get('admin/reportes.php', { tipo: 'tiempos', ...periodo })
+                ]);
+
+                loading.style.display = 'none';
+                content.style.display = 'block';
+
+                renderResumen(resumen.data);
+                renderEstadoChart(porEstado.data);
+                renderMesChart(porMes.data);
+                renderTiempos(tiempos.data);
+
+                // por_dependencia solo para admin
+                if (user.rol === 'admin') {
+                    try {
+                        const porDepe = await API.get('admin/reportes.php', { tipo: 'por_dependencia', ...periodo });
+                        renderDependenciaChart(porDepe.data);
+                    } catch (e) { /* ignorar si no disponible */ }
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                App.showToast(error.message, 'error');
+            }
+        }
+
+        function renderResumen(d) {
+            const e = d.por_estado || {};
+            const m = d.metricas || {};
+            document.getElementById('stats-row').innerHTML = `
+                <div class="stat-card"><div class="num">${d.total_tramites || 0}</div><div class="lbl">Total trámites</div></div>
+                <div class="stat-card"><div class="num">${e.aprobados || 0}</div><div class="lbl">Aprobados</div></div>
+                <div class="stat-card"><div class="num">${e.rechazados || 0}</div><div class="lbl">Rechazados</div></div>
+                <div class="stat-card"><div class="num">${(m.tasa_aprobacion || 0)}%</div><div class="lbl">Tasa de aprobación</div></div>
+                <div class="stat-card"><div class="num">${(m.promedio_dias_resolucion || 0)}</div><div class="lbl">Días prom. resolución</div></div>
+            `;
+        }
+
+        function renderEstadoChart(data) {
+            const ctx = document.getElementById('chart-estado');
+            const labels = data.map(r => App.getEstadoText(r.estado));
+            const values = data.map(r => parseInt(r.cantidad, 10));
+            const bg = data.map(r => COLORS[r.estado] || COLORS.primary);
+
+            charts.estado = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels, datasets: [{ data: values, backgroundColor: bg, borderWidth: 0 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderMesChart(data) {
+            const ctx = document.getElementById('chart-mes');
+            const labels = data.map(r => r.mes);
+            charts.mes = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Total', data: data.map(r => parseInt(r.total, 10)), backgroundColor: COLORS.primary },
+                        { label: 'Aprobados', data: data.map(r => parseInt(r.aprobados, 10)), backgroundColor: COLORS.aprobado },
+                        { label: 'Rechazados', data: data.map(r => parseInt(r.rechazados, 10)), backgroundColor: COLORS.rechazado }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderDependenciaChart(data) {
+            if (!data || !data.length) return;
+            document.getElementById('card-dependencia').style.display = 'block';
+            const ctx = document.getElementById('chart-dependencia');
+            charts.dependencia = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(r => r.dependencia || 'Sin asignar'),
+                    datasets: [
+                        { label: 'Aprobados', data: data.map(r => parseInt(r.aprobados, 10)), backgroundColor: COLORS.aprobado },
+                        { label: 'Rechazados', data: data.map(r => parseInt(r.rechazados, 10)), backgroundColor: COLORS.rechazado },
+                        { label: 'En trámite', data: data.map(r => parseInt(r.en_tramite, 10)), backgroundColor: COLORS.en_proceso }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true, stacked: true, ticks: { precision: 0 } }, y: { stacked: true } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function renderTiempos(data) {
+            const container = document.getElementById('tiempos-container');
+            if (!data || !data.length) {
+                container.innerHTML = '<p class="text-muted">Sin datos de trámites finalizados en el periodo.</p>';
+                return;
+            }
+            container.innerHTML = `<div class="table-container"><table class="table">
+                <thead><tr>
+                    <th>Procedimiento</th><th>Plazo</th><th>Prom. días</th>
+                    <th>Mín/Máx</th><th>Finalizados</th><th>Cumplimiento</th>
+                </tr></thead>
+                <tbody>${data.map(r => `
+                    <tr>
+                        <td><strong>${App.escapeHtml(r.codigo)}</strong> ${App.escapeHtml(r.procedimiento)}</td>
+                        <td>${r.plazo_establecido} días</td>
+                        <td>${r.promedio_dias}</td>
+                        <td>${r.minimo_dias} / ${r.maximo_dias}</td>
+                        <td>${r.total_finalizados}</td>
+                        <td><span class="badge badge-${r.cumplimiento >= 80 ? 'aprobado' : (r.cumplimiento >= 50 ? 'observado' : 'rechazado')}">${r.cumplimiento}%</span></td>
+                    </tr>
+                `).join('')}</tbody>
+            </table></div>`;
+        }
+
+        document.getElementById('btn-aplicar').addEventListener('click', () => {
+            const p = getPeriodo();
+            if (!p.fecha_inicio || !p.fecha_fin) {
+                App.showToast('Selecciona ambas fechas', 'error');
+                return;
+            }
+            if (p.fecha_inicio > p.fecha_fin) {
+                App.showToast('La fecha inicial no puede ser mayor que la final', 'error');
+                return;
+            }
+            loadReportes();
+        });
+
+        if (user) loadReportes();
+    </script>
+</body>
+</html>

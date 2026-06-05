@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesar trámite - Admin TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .admin-badge { font-size: var(--text-xs); font-weight: var(--font-semibold); color: var(--color-primary); background: var(--color-primary-50); padding: 2px var(--space-2); border-radius: var(--radius-full); margin-left: var(--space-2); }
+        .detail-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-6); }
+        .info-list { display: flex; flex-direction: column; gap: var(--space-3); }
+        .info-item { display: flex; justify-content: space-between; gap: var(--space-4); font-size: var(--text-sm); padding-bottom: var(--space-3); border-bottom: 1px solid var(--color-gray-100); }
+        .info-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .info-item .label { color: var(--text-secondary); }
+        .info-item .value { color: var(--text-primary); font-weight: var(--font-medium); text-align: right; }
+        .file-item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); margin-bottom: var(--space-2); }
+        .file-item .file-icon { color: var(--color-primary); flex-shrink: 0; }
+        .file-item .file-name { font-weight: var(--font-medium); font-size: var(--text-sm); }
+        .file-item .file-size { font-size: var(--text-xs); color: var(--text-secondary); }
+        .action-panel { display: flex; flex-direction: column; gap: var(--space-3); }
+        .action-panel .btn { width: 100%; justify-content: center; }
+        .finalized-notice { padding: var(--space-4); border-radius: var(--radius-md); text-align: center; font-weight: var(--font-medium); }
+        .finalized-aprobado { background: #ecfdf5; color: #065f46; }
+        .finalized-rechazado { background: #fef2f2; color: #991b1b; }
+        .req-text { white-space: pre-line; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.6; }
+        @media (min-width: 992px) {
+            .detail-grid { grid-template-columns: 1fr 340px; align-items: start; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="navbar-toggle" id="sidebar-toggle" aria-label="Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="bandeja.html" class="navbar-brand">
+            <div class="navbar-avatar" style="border-radius: var(--radius-lg);">A</div>
+            <span>TUPA UNSAAC <span class="admin-badge">ADMIN</span></span>
+        </a>
+        <div class="navbar-content">
+            <div></div>
+            <div class="navbar-actions">
+                <div class="navbar-user">
+                    <div class="navbar-avatar" id="user-avatar">A</div>
+                    <div class="navbar-user-info">
+                        <div class="navbar-user-name" id="user-name">Administrador</div>
+                        <div class="navbar-user-role" id="user-role">admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Gestión</div>
+                <a href="bandeja.html" class="sidebar-link active">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"></path><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                    Bandeja de entrada
+                </a>
+                <a href="reportes.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Reportes
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Cuenta</div>
+                <a href="../dashboard.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Vista usuario
+                </a>
+                <a href="#" class="sidebar-link" id="logout-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar sesión
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-layout">
+        <main class="main-content">
+            <a href="bandeja.html" class="btn btn-ghost btn-sm" style="margin-bottom: var(--space-4);">
+                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Volver a la bandeja
+            </a>
+
+            <div id="loading" style="text-align:center; padding: var(--space-8);">
+                <div class="spinner" style="margin: 0 auto;"></div>
+            </div>
+
+            <div id="detail" style="display:none;">
+                <div class="section-row" style="display:flex; justify-content:space-between; align-items:flex-start; gap: var(--space-4); flex-wrap:wrap; margin-bottom: var(--space-6);">
+                    <div>
+                        <h1 class="page-title" id="exp-title" style="margin:0;">EXP-0000-00000</h1>
+                        <p class="text-muted" id="proc-name" style="margin: var(--space-1) 0 0;">Procedimiento</p>
+                    </div>
+                    <span class="badge" id="estado-badge">—</span>
+                </div>
+
+                <div class="detail-grid">
+                    <!-- Columna principal -->
+                    <div style="display:flex; flex-direction:column; gap: var(--space-6);">
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title" style="margin:0;">Información del trámite</h3></div>
+                            <div class="card-body">
+                                <div class="info-list" id="info-list"></div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title" style="margin:0;">Requisitos</h3></div>
+                            <div class="card-body"><div class="req-text" id="requisitos">—</div></div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title" style="margin:0;">Documentos adjuntos</h3></div>
+                            <div class="card-body" id="archivos"><p class="text-muted">Sin documentos.</p></div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title" style="margin:0;">Historial de seguimiento</h3></div>
+                            <div class="card-body"><div class="timeline" id="timeline"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de acciones -->
+                    <div class="card" style="position: sticky; top: var(--space-6);">
+                        <div class="card-header"><h3 class="card-title" style="margin:0;">Acciones</h3></div>
+                        <div class="card-body">
+                            <div class="action-panel" id="action-panel"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de acción -->
+    <div class="modal-backdrop" id="action-backdrop"></div>
+    <div class="modal" id="action-modal">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">Confirmar acción</h3>
+        </div>
+        <div class="modal-body">
+            <p id="modal-desc" style="margin-bottom: var(--space-4);"></p>
+            <div class="form-group">
+                <label class="form-label" for="comentario">
+                    Comentario <span id="comentario-req" style="color: var(--color-error, #dc2626); display:none;">*</span>
+                </label>
+                <textarea id="comentario" class="form-textarea" rows="4" placeholder="Escribe un comentario..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" id="modal-cancel">Cancelar</button>
+            <button class="btn btn-primary" id="modal-confirm">Confirmar</button>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        const user = Admin.requireAdmin();
+        if (user) Admin.initLayout(user);
+
+        const tramiteId = App.getUrlParam('id');
+        let tramiteData = null;
+        let pendingAccion = null;
+
+        const ACCIONES = {
+            en_proceso: { label: 'Poner en proceso', desc: 'El trámite pasará a estado "En proceso".', requiere: false, btn: 'btn-primary' },
+            observar:   { label: 'Observar', desc: 'El trámite será observado y se notificará al solicitante. El comentario es obligatorio.', requiere: true, btn: 'btn-secondary' },
+            aprobar:    { label: 'Aprobar', desc: 'El trámite quedará APROBADO y finalizado. Esta acción no se puede deshacer.', requiere: false, btn: 'btn-success' },
+            rechazar:   { label: 'Rechazar', desc: 'El trámite quedará RECHAZADO y finalizado. El comentario es obligatorio.', requiere: true, btn: 'btn-danger' }
+        };
+
+        function formatBytes(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024, sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+        }
+
+        async function loadDetalle() {
+            if (!tramiteId) {
+                App.showToast('ID de trámite no especificado', 'error');
+                return;
+            }
+            try {
+                const response = await API.get('tramites/detalle.php', { id: tramiteId });
+                document.getElementById('loading').style.display = 'none';
+
+                if (response.success) {
+                    tramiteData = response.data.tramite;
+                    render(response.data);
+                    document.getElementById('detail').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                App.showToast(error.message, 'error');
+            }
+        }
+
+        function render(data) {
+            const t = data.tramite;
+            document.getElementById('exp-title').textContent = t.numero_expediente;
+            document.getElementById('proc-name').textContent = t.procedimiento_nombre;
+
+            const badge = document.getElementById('estado-badge');
+            badge.className = 'badge badge-' + t.estado;
+            badge.textContent = App.getEstadoText(t.estado);
+
+            // Info
+            document.getElementById('info-list').innerHTML = `
+                <div class="info-item"><span class="label">Código procedimiento</span><span class="value">${App.escapeHtml(t.procedimiento_codigo || '-')}</span></div>
+                <div class="info-item"><span class="label">Dependencia</span><span class="value">${App.escapeHtml(t.dependencia || '-')}</span></div>
+                <div class="info-item"><span class="label">Costo</span><span class="value">${App.formatMoney(t.costo)}</span></div>
+                <div class="info-item"><span class="label">Plazo</span><span class="value">${t.plazo_dias || '-'} días</span></div>
+                <div class="info-item"><span class="label">Fecha de inicio</span><span class="value">${App.formatDateTime(t.fecha_inicio)}</span></div>
+                <div class="info-item"><span class="label">Fecha de cierre</span><span class="value">${t.fecha_fin ? App.formatDateTime(t.fecha_fin) : '—'}</span></div>
+                ${t.observaciones ? `<div class="info-item"><span class="label">Observaciones</span><span class="value" style="white-space:pre-line; text-align:right;">${App.escapeHtml(t.observaciones)}</span></div>` : ''}
+            `;
+
+            document.getElementById('requisitos').textContent = t.requisitos || 'Sin requisitos especificados.';
+
+            // Archivos
+            const archivosEl = document.getElementById('archivos');
+            if (data.archivos && data.archivos.length) {
+                archivosEl.innerHTML = data.archivos.map(a => `
+                    <div class="file-item">
+                        <span class="file-icon">
+                            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        </span>
+                        <div>
+                            <div class="file-name">${App.escapeHtml(a.nombre_original)}</div>
+                            <div class="file-size">${formatBytes(a.tamanio)} · ${App.formatDate(a.created_at, {day:'numeric', month:'short', year:'numeric'})}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                archivosEl.innerHTML = '<p class="text-muted">Sin documentos adjuntos.</p>';
+            }
+
+            // Timeline
+            const timeline = document.getElementById('timeline');
+            if (data.historial && data.historial.length) {
+                const markerMap = { aprobado: 'success', rechazado: 'error', observado: 'warning', en_proceso: 'info', pendiente: 'primary' };
+                timeline.innerHTML = data.historial.map(h => `
+                    <div class="timeline-item">
+                        <div class="timeline-marker timeline-marker-${markerMap[h.estado_nuevo] || 'primary'}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">${App.getEstadoText(h.estado_nuevo)}</div>
+                            <div class="timeline-meta">${App.formatDateTime(h.created_at)}${h.usuario_nombre ? ' · ' + App.escapeHtml(h.usuario_nombre) : ''}</div>
+                            ${h.comentario ? `<p class="timeline-text">${App.escapeHtml(h.comentario)}</p>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                timeline.innerHTML = '<p class="text-muted">Sin movimientos registrados.</p>';
+            }
+
+            renderActions(t.estado);
+        }
+
+        function renderActions(estado) {
+            const panel = document.getElementById('action-panel');
+
+            if (estado === 'aprobado' || estado === 'rechazado') {
+                panel.innerHTML = `<div class="finalized-notice finalized-${estado}">
+                    Este trámite está <strong>${App.getEstadoText(estado).toLowerCase()}</strong> y no admite más cambios.
+                </div>`;
+                return;
+            }
+
+            // Acciones disponibles según estado actual
+            const disponibles = [];
+            if (estado !== 'en_proceso') disponibles.push('en_proceso');
+            disponibles.push('observar');
+            disponibles.push('aprobar');
+            disponibles.push('rechazar');
+
+            const puedeResolver = Admin.canResolve(user);
+
+            panel.innerHTML = disponibles.map(acc => {
+                const cfg = ACCIONES[acc];
+                const esResolucion = (acc === 'aprobar' || acc === 'rechazar');
+                const disabled = esResolucion && !puedeResolver;
+                return `<button class="btn ${cfg.btn}" data-accion="${acc}" ${disabled ? 'disabled title="Solo jefe o administrador"' : ''}>${cfg.label}</button>`;
+            }).join('') + (!puedeResolver ? `<p class="text-muted" style="font-size:var(--text-xs); text-align:center; margin-top:var(--space-2);">Aprobar/Rechazar requiere rol jefe o administrador.</p>` : '');
+
+            panel.querySelectorAll('button[data-accion]').forEach(btn => {
+                btn.addEventListener('click', () => openActionModal(btn.dataset.accion));
+            });
+        }
+
+        // ----- Modal de acción -----
+        function openActionModal(accion) {
+            pendingAccion = accion;
+            const cfg = ACCIONES[accion];
+            document.getElementById('modal-title').textContent = cfg.label + ' trámite';
+            document.getElementById('modal-desc').textContent = cfg.desc;
+            document.getElementById('comentario').value = '';
+            document.getElementById('comentario-req').style.display = cfg.requiere ? 'inline' : 'none';
+            const confirmBtn = document.getElementById('modal-confirm');
+            confirmBtn.className = 'btn ' + cfg.btn;
+            confirmBtn.textContent = cfg.label;
+            document.getElementById('action-backdrop').classList.add('active');
+            document.getElementById('action-modal').classList.add('active');
+        }
+
+        function closeActionModal() {
+            document.getElementById('action-backdrop').classList.remove('active');
+            document.getElementById('action-modal').classList.remove('active');
+            pendingAccion = null;
+        }
+
+        document.getElementById('modal-cancel').addEventListener('click', closeActionModal);
+        document.getElementById('action-backdrop').addEventListener('click', closeActionModal);
+
+        document.getElementById('modal-confirm').addEventListener('click', async () => {
+            if (!pendingAccion) return;
+            const cfg = ACCIONES[pendingAccion];
+            const comentario = document.getElementById('comentario').value.trim();
+
+            if (cfg.requiere && !comentario) {
+                App.showToast('El comentario es obligatorio para esta acción', 'error');
+                return;
+            }
+
+            const confirmBtn = document.getElementById('modal-confirm');
+            confirmBtn.disabled = true;
+            const original = confirmBtn.textContent;
+            confirmBtn.textContent = 'Procesando...';
+
+            try {
+                const response = await API.post('admin/procesar.php', {
+                    tramite_id: parseInt(tramiteId, 10),
+                    accion: pendingAccion,
+                    comentario: comentario || null
+                });
+                if (response.success) {
+                    App.showToast(response.message || 'Trámite procesado', 'success');
+                    closeActionModal();
+                    document.getElementById('detail').style.display = 'none';
+                    document.getElementById('loading').style.display = 'block';
+                    loadDetalle();
+                }
+            } catch (error) {
+                App.showToast(error.message, 'error');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = original;
+            }
+        });
+
+        if (user) loadDetalle();
+    </script>
+</body>
+</html>

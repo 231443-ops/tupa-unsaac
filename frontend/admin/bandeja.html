@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandeja de entrada - Admin TUPA UNSAAC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .admin-badge {
+            font-size: var(--text-xs);
+            font-weight: var(--font-semibold);
+            color: var(--color-primary);
+            background: var(--color-primary-50);
+            padding: 2px var(--space-2);
+            border-radius: var(--radius-full);
+            margin-left: var(--space-2);
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+        .stat-mini {
+            background: var(--bg-primary);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+        }
+        .stat-mini .num { font-size: var(--text-2xl); font-weight: var(--font-bold); color: var(--text-primary); }
+        .stat-mini .lbl { font-size: var(--text-sm); color: var(--text-secondary); }
+        .toolbar { display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-6); }
+        .search-box { position: relative; flex: 1; }
+        .search-box .input-group-icon { position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--color-gray-400); pointer-events: none; }
+        .search-box .form-input { padding-left: var(--space-10); }
+        .filters { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+        .filter-chip { padding: var(--space-2) var(--space-3); font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--text-secondary); background: var(--bg-primary); border: 1px solid var(--color-gray-300); border-radius: var(--radius-full); cursor: pointer; transition: all var(--transition-fast); white-space: nowrap; }
+        .filter-chip:hover { border-color: var(--color-primary); }
+        .filter-chip.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+        .row-urgent { background: var(--color-warning-50, #fff7ed); }
+        .row-vencido { background: #fef2f2; }
+        .solicitante-cell strong { display: block; }
+        .solicitante-cell small { color: var(--text-secondary); }
+        @media (min-width: 768px) {
+            .toolbar { flex-direction: row; align-items: center; }
+            .search-box { max-width: 350px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="navbar-toggle" id="sidebar-toggle" aria-label="Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="bandeja.html" class="navbar-brand">
+            <div class="navbar-avatar" style="border-radius: var(--radius-lg);">A</div>
+            <span>TUPA UNSAAC <span class="admin-badge">ADMIN</span></span>
+        </a>
+        <div class="navbar-content">
+            <div></div>
+            <div class="navbar-actions">
+                <div class="navbar-user">
+                    <div class="navbar-avatar" id="user-avatar">A</div>
+                    <div class="navbar-user-info">
+                        <div class="navbar-user-name" id="user-name">Administrador</div>
+                        <div class="navbar-user-role" id="user-role">admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Gestión</div>
+                <a href="bandeja.html" class="sidebar-link active">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-6l-2 3h-4l-2-3H2"></path><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                    Bandeja de entrada
+                </a>
+                <a href="reportes.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Reportes
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Cuenta</div>
+                <a href="../dashboard.html" class="sidebar-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Vista usuario
+                </a>
+                <a href="#" class="sidebar-link" id="logout-link">
+                    <svg class="sidebar-link-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar sesión
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-layout">
+        <main class="main-content">
+            <h1 class="page-title" style="margin-bottom: var(--space-2);">Bandeja de entrada</h1>
+            <p class="text-muted" style="margin-bottom: var(--space-6);">Trámites pendientes de atención en tu dependencia.</p>
+
+            <!-- Resumen -->
+            <div class="stats-row" id="stats-row">
+                <div class="stat-mini"><div class="num" id="stat-pendiente">0</div><div class="lbl">Pendientes</div></div>
+                <div class="stat-mini"><div class="num" id="stat-en_proceso">0</div><div class="lbl">En proceso</div></div>
+                <div class="stat-mini"><div class="num" id="stat-observado">0</div><div class="lbl">Observados</div></div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="search-box">
+                    <span class="input-group-icon">
+                        <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <input type="text" id="search" class="form-input" placeholder="Buscar por expediente, solicitante o DNI...">
+                </div>
+                <div class="filters" id="filters">
+                    <button class="filter-chip active" data-estado="">Todos</button>
+                    <button class="filter-chip" data-estado="pendiente">Pendientes</button>
+                    <button class="filter-chip" data-estado="en_proceso">En proceso</button>
+                    <button class="filter-chip" data-estado="observado">Observados</button>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="card">
+                <div class="card-body" id="table-container">
+                    <div id="loading" style="text-align:center; padding: var(--space-8);">
+                        <div class="spinner" style="margin: 0 auto;"></div>
+                    </div>
+
+                    <div class="empty-state" id="empty-state" style="display:none;">
+                        <div class="empty-state-icon">
+                            <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-6l-2 3h-4l-2-3H2"></path><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                        </div>
+                        <h3 class="empty-state-title">Bandeja vacía</h3>
+                        <p class="empty-state-message">No hay trámites pendientes con los filtros seleccionados.</p>
+                    </div>
+
+                    <div id="table-content" style="display:none;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        const user = Admin.requireAdmin();
+        if (user) Admin.initLayout(user);
+
+        let allTramites = [];
+        let currentEstado = '';
+        let currentSearch = '';
+
+        async function loadBandeja() {
+            const loading = document.getElementById('loading');
+            const empty = document.getElementById('empty-state');
+            const content = document.getElementById('table-content');
+
+            loading.style.display = 'block';
+            empty.style.display = 'none';
+            content.style.display = 'none';
+
+            try {
+                const params = { limit: 50 };
+                if (currentEstado) params.estado = currentEstado;
+
+                const response = await API.get('admin/bandeja.php', params);
+                loading.style.display = 'none';
+
+                if (response.success) {
+                    allTramites = response.data.tramites || [];
+                    const r = response.data.resumen || {};
+                    document.getElementById('stat-pendiente').textContent = r.pendiente || 0;
+                    document.getElementById('stat-en_proceso').textContent = r.en_proceso || 0;
+                    document.getElementById('stat-observado').textContent = r.observado || 0;
+                    renderTable();
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                App.showToast(error.message, 'error');
+            }
+        }
+
+        function renderTable() {
+            const empty = document.getElementById('empty-state');
+            const content = document.getElementById('table-content');
+
+            let filtered = allTramites;
+            if (currentSearch) {
+                const s = currentSearch.toLowerCase();
+                filtered = allTramites.filter(t =>
+                    (t.numero_expediente || '').toLowerCase().includes(s) ||
+                    (t.solicitante_nombre || '').toLowerCase().includes(s) ||
+                    (t.solicitante_dni || '').toLowerCase().includes(s)
+                );
+            }
+
+            if (filtered.length === 0) {
+                empty.style.display = 'flex';
+                content.style.display = 'none';
+                return;
+            }
+
+            empty.style.display = 'none';
+            content.style.display = 'block';
+
+            content.innerHTML = `<div class="table-container"><table class="table">
+                <thead><tr>
+                    <th>Expediente</th><th>Solicitante</th><th>Procedimiento</th>
+                    <th>Plazo</th><th>Estado</th><th></th>
+                </tr></thead>
+                <tbody>${filtered.map(t => {
+                    const rowClass = t.vencido ? 'row-vencido' : (t.urgente ? 'row-urgent' : '');
+                    return `
+                    <tr class="${rowClass}" style="cursor:pointer" onclick="location.href='procesar.html?id=${t.id}'">
+                        <td><strong>${App.escapeHtml(t.numero_expediente)}</strong></td>
+                        <td class="solicitante-cell">
+                            <strong>${App.escapeHtml(t.solicitante_nombre || '-')}</strong>
+                            <small>DNI: ${App.escapeHtml(t.solicitante_dni || '-')}</small>
+                        </td>
+                        <td>${App.escapeHtml(t.procedimiento_nombre)}</td>
+                        <td>${Admin.urgencyBadge(t)}</td>
+                        <td><span class="badge badge-${t.estado}">${App.getEstadoText(t.estado)}</span></td>
+                        <td>
+                            <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </td>
+                    </tr>`;
+                }).join('')}</tbody>
+            </table></div>`;
+        }
+
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentEstado = chip.dataset.estado;
+                loadBandeja();
+            });
+        });
+
+        const searchInput = document.getElementById('search');
+        searchInput.addEventListener('input', App.debounce(() => {
+            currentSearch = searchInput.value.trim();
+            renderTable();
+        }, 300));
+
+        if (user) loadBandeja();
+    </script>
+</body>
+</html>
