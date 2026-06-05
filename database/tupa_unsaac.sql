@@ -7,6 +7,7 @@ USE tupa_unsaac;
 -- Tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    dni VARCHAR(15) UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -57,8 +58,37 @@ CREATE TABLE IF NOT EXISTS tramites (
     FOREIGN KEY (procedimiento_id) REFERENCES procedimientos(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Tabla de historial de estados de trámites
+CREATE TABLE IF NOT EXISTS historial_estados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tramite_id INT NOT NULL,
+    estado_anterior ENUM('pendiente', 'en_proceso', 'observado', 'aprobado', 'rechazado'),
+    estado_nuevo ENUM('pendiente', 'en_proceso', 'observado', 'aprobado', 'rechazado') NOT NULL,
+    comentario TEXT,
+    usuario_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- Tabla de archivos adjuntos de trámites
+CREATE TABLE IF NOT EXISTS archivos_tramite (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tramite_id INT NOT NULL,
+    nombre_original VARCHAR(255) NOT NULL,
+    nombre_archivo VARCHAR(255) NOT NULL,
+    tipo_mime VARCHAR(100) NOT NULL,
+    tamanio INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tramite_id) REFERENCES tramites(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- Índices para optimización
 CREATE INDEX idx_usuarios_email ON usuarios(email);
+CREATE INDEX idx_usuarios_dni ON usuarios(dni);
 CREATE INDEX idx_tramites_usuario ON tramites(usuario_id);
 CREATE INDEX idx_tramites_estado ON tramites(estado);
+CREATE INDEX idx_tramites_expediente ON tramites(numero_expediente);
 CREATE INDEX idx_procedimientos_dependencia ON procedimientos(dependencia_id);
+CREATE INDEX idx_historial_tramite ON historial_estados(tramite_id);
+CREATE INDEX idx_archivos_tramite ON archivos_tramite(tramite_id);
