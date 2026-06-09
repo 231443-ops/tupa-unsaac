@@ -5,7 +5,7 @@
 
 const API = (() => {
     // Configuración base (ruta absoluta desde la raíz del servidor web)
-    const BASE_URL = '/tupa-unsaac/backend';
+    const BASE_URL = 'http://localhost/tupa-unsaac/backend/';
 
     // Timeout por defecto (30 segundos)
     const DEFAULT_TIMEOUT = 30000;

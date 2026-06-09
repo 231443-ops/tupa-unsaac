@@ -1,30 +1,45 @@
-# Sistema TUPA UNSAAC
+# Optimización del Sistema TUPA UNSAAC
 
-Plataforma web para la gestión del **Texto Único de Procedimientos Administrativos (TUPA)** de la
-Universidad Nacional de San Antonio Abad del Cusco (UNSAAC).
+Propuesta de **optimización del sistema de trámite documentario** de la Universidad Nacional de
+San Antonio Abad del Cusco (UNSAAC). No partimos de cero: la universidad ya cuenta con el sistema
+**Pladdes v2.0.1** ([tramite.unsaac.edu.pe](https://tramite.unsaac.edu.pe)), y este proyecto
+identifica sus deficiencias reales y las resuelve en una plataforma mejorada.
 
-## El problema
+## El problema: deficiencias del sistema actual (Pladdes v2.0.1)
 
-### Sistema actual
+Tras analizar el sistema en producción, se identificaron las siguientes deficiencias:
 
-Los trámites administrativos en la universidad se realizan de forma **presencial y en papel**. El
-solicitante no conoce el estado de su expediente, debe acercarse físicamente a las oficinas para
-consultar avances y no existe un registro digital unificado del flujo de cada procedimiento. Esto
-genera colas, pérdida de documentos y demoras.
+| # | Deficiencia | Impacto |
+|---|-------------|---------|
+| 1 | El usuario aparece como **"Invitado"**, sin un login real | No hay identidad ni historial del solicitante |
+| 2 | **Bug**: los campos Facultad y Carrera muestran `undefined` | Datos corruptos en la solicitud y desconfianza del usuario |
+| 3 | **3 plataformas desconectadas** (trámites, pagos y reclamos) | El usuario debe navegar entre sistemas distintos para un solo procedimiento |
+| 4 | **Sin buscador de texto libre**: solo un dropdown de procedimientos | Encontrar un trámite exige conocer su nombre exacto |
+| 5 | **Sin seguimiento visual** del trámite | El solicitante no sabe en qué etapa está su expediente |
+| 6 | **Sin notificaciones automáticas** | El usuario debe consultar manualmente si hubo avances |
+| 7 | Campo de petición **limitado a 180 caracteres** | Imposible describir adecuadamente la solicitud |
+| 8 | Acepta archivos **RAR/ZIP** (inseguro) | Riesgo de carga de contenido malicioso sin inspección |
+| 9 | **Diseño móvil deficiente** | Mala experiencia en celulares, el dispositivo más usado por estudiantes |
 
-### Nueva plataforma
+## La solución: nuestra plataforma
 
-Una aplicación web que digitaliza el ciclo completo de un trámite:
+Cada deficiencia detectada tiene una solución directa en esta plataforma:
 
-- **Catálogo TUPA en línea**: cualquier persona puede consultar los procedimientos, requisitos,
-  costos y plazos.
-- **Inicio de trámites**: la comunidad universitaria y el público general pueden iniciar un trámite,
-  adjuntar documentos (PDF/JPG/PNG) y recibir un número de expediente (`EXP-AÑO-NNNNN`).
-- **Seguimiento en tiempo real**: cada trámite tiene una línea de tiempo con su historial de estados
-  (pendiente → en proceso → observado → aprobado/rechazado).
-- **Consulta pública**: con el número de expediente y el DNI se puede ver el estado sin iniciar sesión.
-- **Panel de administración**: operadores, jefes y administradores gestionan la bandeja de entrada,
-  procesan trámites y consultan reportes estadísticos.
+| Deficiencia de Pladdes | Solución implementada |
+|------------------------|----------------------|
+| Usuario "Invitado" sin login | **Autenticación real** con registro, sesiones PHP y roles (usuario, operador, jefe, administrador) |
+| Facultad/Carrera `undefined` | **Validación de datos** en frontend y backend; el perfil del usuario mantiene sus datos consistentes |
+| 3 plataformas desconectadas | **Plataforma unificada**: catálogo TUPA, inicio de trámite, adjuntos y seguimiento en un solo sistema |
+| Solo dropdown de procedimientos | **Buscador de texto libre** sobre el catálogo TUPA, con filtros por dependencia |
+| Sin seguimiento visual | **Línea de tiempo** del expediente con historial de estados (pendiente → en proceso → observado → aprobado/rechazado) |
+| Sin notificaciones | **Notificaciones automáticas** ante cada cambio de estado del trámite |
+| Petición limitada a 180 caracteres | Campo de descripción **sin límite restrictivo**, adecuado para detallar la solicitud |
+| Acepta RAR/ZIP | Solo se aceptan **PDF/JPG/PNG**, con validación de tipo y tamaño en el servidor |
+| Diseño móvil deficiente | **Diseño responsive** (mobile-first) con sistema de diseño propio |
+
+Además, incluye **consulta pública** del expediente (número `EXP-AÑO-NNNNN` + DNI, sin iniciar
+sesión) y un **panel de administración** con bandeja de entrada, procesamiento de trámites y
+reportes estadísticos.
 
 ## Stack tecnológico
 
