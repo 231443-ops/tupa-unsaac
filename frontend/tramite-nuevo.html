@@ -183,7 +183,7 @@
                         <!-- Step 1: Interesado -->
                         <div class="step active" data-step="1">
                             <h2 class="step-title">Datos del interesado</h2>
-                            <p class="step-subtitle">Verifica que tus datos sean correctos</p>
+                            <p class="step-subtitle" id="step1-subtitle">Verifica que tus datos sean correctos</p>
 
                             <div class="form-group">
                                 <label class="form-label">Nombre completo</label>
@@ -193,9 +193,18 @@
                                 <label class="form-label">Correo electrónico</label>
                                 <input type="email" id="i-email" class="form-input" readonly>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Tipo de usuario</label>
-                                <input type="text" id="i-rol" class="form-input" readonly>
+
+                            <!-- Solo para público general: único dato que el sistema no puede deducir -->
+                            <div class="form-group" id="egresado-group" style="display:none;">
+                                <label class="form-label">¿Eres egresado(a) de la UNSAAC?</label>
+                                <div style="display:flex; gap: var(--space-4);">
+                                    <label style="display:flex; align-items:center; gap: var(--space-2); cursor:pointer;">
+                                        <input type="radio" name="egresado" value="si"> Sí, soy egresado(a)
+                                    </label>
+                                    <label style="display:flex; align-items:center; gap: var(--space-2); cursor:pointer;">
+                                        <input type="radio" name="egresado" value="no" checked> No
+                                    </label>
+                                </div>
                             </div>
 
                             <div class="wizard-actions">
@@ -289,19 +298,41 @@
         </main>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/api.js?v=3"></script>
+    <script src="js/main.js?v=3"></script>
     <script>
         const user = App.checkAuth();
+
+        // El sistema deduce el tipo de usuario desde la sesión (sin preguntarlo, a diferencia de Pladdes)
+        const tipoInfo = App.getUserTipo(user);
+        let publicoFiltro = tipoInfo.publico;
+
         if (user) {
             document.getElementById('user-avatar').textContent = (user.nombre || 'U').charAt(0).toUpperCase();
             document.getElementById('user-name').textContent = user.nombre || 'Usuario';
-            document.getElementById('user-role').textContent = user.rol || 'usuario';
+            document.getElementById('user-role').textContent = tipoInfo.label || 'Público general';
 
             // Step 1 autocompletado
             document.getElementById('i-nombre').value = user.nombre || '';
             document.getElementById('i-email').value = user.email || '';
-            document.getElementById('i-rol').value = (user.rol || 'usuario').charAt(0).toUpperCase() + (user.rol || 'usuario').slice(1);
+
+            // Saludo personalizado por tipo de usuario
+            const saludo = `Hola, ${(user.nombre || 'Usuario').split(' ')[0]} 👋` +
+                (tipoInfo.label ? ` — ${tipoInfo.label}` : '');
+            document.getElementById('step1-subtitle').textContent =
+                `${saludo}. Verifica que tus datos sean correctos`;
+
+            // Único caso que el sistema no puede deducir: público general → ¿egresado?
+            if (tipoInfo.tipo === 'publico') {
+                document.getElementById('egresado-group').style.display = 'block';
+                document.querySelectorAll('input[name="egresado"]').forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        publicoFiltro = radio.value === 'si' ? 'egresados' : 'todos';
+                        allProcs = [];
+                        selectedProc = null;
+                    });
+                });
+            }
         }
 
         document.getElementById('logout-link').addEventListener('click', (e) => {
@@ -359,6 +390,7 @@
                 const params = {};
                 if (searchTerm) params.q = searchTerm;
                 if (currentCat) params.categoria = currentCat;
+                if (publicoFiltro) params.publico = publicoFiltro;
 
                 const response = await API.get('tupa/procedimientos.php', params);
                 if (response.success) {
@@ -421,7 +453,8 @@
         // Navigation
         document.getElementById('next-1').addEventListener('click', () => {
             goToStep(2);
-            if (allProcs.length === 0) loadProcedimientos();
+            // Recargar siempre: el filtro de público puede haber cambiado (caso egresado)
+            loadProcedimientos();
         });
         document.getElementById('prev-2').addEventListener('click', () => goToStep(1));
         document.getElementById('next-2').addEventListener('click', () => {

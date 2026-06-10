@@ -5,6 +5,7 @@
  * Query params:
  *   - q: texto de búsqueda (nombre, código, descripción)
  *   - categoria: ID de la dependencia/categoría
+ *   - publico: audiencia (todos|estudiantes|docentes|egresados); incluye siempre los de 'todos'
  */
 
 require_once __DIR__ . '/../config/database.php';
@@ -28,6 +29,8 @@ if (!$conn) {
 // Parámetros de búsqueda
 $busqueda = isset($_GET['q']) ? sanitizeString($_GET['q']) : '';
 $categoriaId = isset($_GET['categoria']) ? (int)$_GET['categoria'] : 0;
+$publico = isset($_GET['publico']) ? sanitizeString($_GET['publico']) : '';
+$publicosValidos = ['todos', 'estudiantes', 'docentes', 'egresados'];
 
 // Construir query
 $sql = "
@@ -39,6 +42,7 @@ $sql = "
         p.requisitos,
         p.costo,
         p.plazo_dias,
+        p.publico_objetivo,
         p.base_legal,
         d.id AS categoria_id,
         d.nombre AS categoria_nombre
@@ -62,6 +66,12 @@ if (!empty($busqueda)) {
 if ($categoriaId > 0) {
     $sql .= " AND p.dependencia_id = ?";
     $params[] = $categoriaId;
+}
+
+// Filtro por público objetivo (siempre incluye los procedimientos para 'todos')
+if (in_array($publico, $publicosValidos, true)) {
+    $sql .= " AND p.publico_objetivo IN ('todos', ?)";
+    $params[] = $publico;
 }
 
 $sql .= " ORDER BY p.nombre ASC";

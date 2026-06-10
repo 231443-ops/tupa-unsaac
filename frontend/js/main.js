@@ -107,6 +107,40 @@ const App = (() => {
     };
 
     /**
+     * Determinar el tipo de usuario a partir de la sesión.
+     * El sistema lo deduce solo (a diferencia de Pladdes, que lo pregunta cada vez):
+     * - rol admin            -> administrador del sistema
+     * - rol jefe/operador    -> personal administrativo
+     * - email 6 dígitos @unsaac.edu.pe -> estudiante
+     * - otro email @unsaac.edu.pe      -> docente
+     * - cualquier otro email           -> público general
+     * @param {Object} user - Datos del usuario (de sessionStorage)
+     * @returns {{tipo: string, label: string, publico: string}}
+     *   tipo: estudiante|docente|administrativo|publico|admin
+     *   label: sufijo para el mensaje de bienvenida ('' para público)
+     *   publico: valor del filtro para tupa/procedimientos.php
+     */
+    const getUserTipo = (user) => {
+        if (!user) return { tipo: 'publico', label: '', publico: 'todos' };
+
+        if (user.rol === 'admin') {
+            return { tipo: 'admin', label: 'Administrador del sistema', publico: '' };
+        }
+        if (user.rol === 'jefe' || user.rol === 'operador') {
+            return { tipo: 'administrativo', label: 'Personal Administrativo', publico: 'docentes' };
+        }
+
+        const email = (user.email || '').toLowerCase();
+        if (/^\d{6}@unsaac\.edu\.pe$/.test(email)) {
+            return { tipo: 'estudiante', label: 'Estudiante UNSAAC', publico: 'estudiantes' };
+        }
+        if (email.endsWith('@unsaac.edu.pe')) {
+            return { tipo: 'docente', label: 'Docente UNSAAC', publico: 'docentes' };
+        }
+        return { tipo: 'publico', label: '', publico: 'todos' };
+    };
+
+    /**
      * Verificar si el usuario tiene un rol específico
      * @param {string|string[]} roles - Rol o array de roles permitidos
      * @returns {boolean}
@@ -547,6 +581,7 @@ const App = (() => {
         init,
         checkAuth,
         getCurrentUser,
+        getUserTipo,
         hasRole,
         logout,
         showToast,

@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS procedimientos (
     dependencia_id INT,
     costo DECIMAL(10,2) DEFAULT 0.00,
     plazo_dias INT DEFAULT 30,
+    publico_objetivo ENUM('todos', 'estudiantes', 'docentes', 'egresados') DEFAULT 'todos',
     base_legal TEXT,
     activo TINYINT(1) DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -102,6 +103,7 @@ CREATE TABLE IF NOT EXISTS notificaciones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     tramite_id INT NULL,
+    tipo ENUM('cambio_estado', 'observacion', 'aprobado', 'rechazado') DEFAULT 'cambio_estado',
     titulo VARCHAR(150) NOT NULL,
     mensaje TEXT,
     leida TINYINT(1) DEFAULT 0,
@@ -149,9 +151,11 @@ INSERT INTO dependencias (nombre, codigo, descripcion) VALUES
 ('Oficina de Servicios Académicos', 'OSA', 'Constancias, certificados y registros académicos');
 
 -- Procedimientos del catálogo TUPA
-INSERT INTO procedimientos (codigo, nombre, descripcion, requisitos, dependencia_id, costo, plazo_dias, base_legal) VALUES
-('P-001', 'Constancia de matrícula', 'Emisión de constancia de matrícula del semestre vigente', 'Recibo de pago\nCopia de DNI', 2, 15.00, 5, 'Reglamento académico UNSAAC'),
-('P-002', 'Certificado de estudios', 'Certificado oficial de estudios por ciclo o consolidado', 'Recibo de pago\nCopia de DNI\nSolicitud dirigida al decano', 1, 35.00, 10, 'Reglamento académico UNSAAC');
+INSERT INTO procedimientos (codigo, nombre, descripcion, requisitos, dependencia_id, costo, plazo_dias, publico_objetivo, base_legal) VALUES
+('P-001', 'Constancia de matrícula', 'Emisión de constancia de matrícula del semestre vigente', 'Recibo de pago\nCopia de DNI', 2, 15.00, 5, 'estudiantes', 'Reglamento académico UNSAAC'),
+('P-002', 'Certificado de estudios', 'Certificado oficial de estudios por ciclo o consolidado', 'Recibo de pago\nCopia de DNI\nSolicitud dirigida al decano', 1, 35.00, 10, 'todos', 'Reglamento académico UNSAAC'),
+('P-003', 'Licencia por capacitación oficial', 'Licencia con goce de haber para capacitación de docentes y personal', 'Solicitud dirigida al decano\nPlan de capacitación\nCarta de aceptación de la institución', 1, 0.00, 15, 'docentes', 'Ley universitaria 30220'),
+('P-004', 'Constancia de egresado', 'Emisión de constancia que acredita la condición de egresado', 'Recibo de pago\nCopia de DNI', 2, 20.00, 7, 'egresados', 'Reglamento académico UNSAAC');
 
 -- Usuarios de prueba
 -- admin@unsaac.edu.pe  -> contraseña: Admin123!

@@ -78,7 +78,7 @@ if ($user['rol'] !== 'admin') {
 
 // Verificar que el trámite existe y pertenece a la dependencia del usuario
 $sql = "
-    SELECT t.id, t.estado, t.numero_expediente, p.dependencia_id
+    SELECT t.id, t.estado, t.numero_expediente, t.usuario_id, p.dependencia_id
     FROM tramites t
     INNER JOIN procedimientos p ON t.procedimiento_id = p.id
     WHERE t.id = ?
@@ -139,6 +139,24 @@ try {
         VALUES (?, ?, ?, ?, ?)
     ");
     $stmt->execute([$tramiteId, $estadoActual, $nuevoEstado, $comentario, $user['id']]);
+
+    // Notificar al dueño del trámite sobre el cambio de estado
+    $notifConfig = [
+        'en_proceso' => ['cambio_estado', 'Trámite en proceso', "Tu trámite {$tramite['numero_expediente']} está en proceso"],
+        'observado'  => ['observacion', 'Trámite observado', "Tu trámite {$tramite['numero_expediente']} fue observado"],
+        'aprobado'   => ['aprobado', 'Trámite aprobado', "Tu trámite {$tramite['numero_expediente']} fue aprobado"],
+        'rechazado'  => ['rechazado', 'Trámite rechazado', "Tu trámite {$tramite['numero_expediente']} fue rechazado"]
+    ];
+    [$notifTipo, $notifTitulo, $notifMensaje] = $notifConfig[$nuevoEstado];
+    if ($comentario) {
+        $notifMensaje .= ": " . $comentario;
+    }
+
+    $stmt = $conn->prepare("
+        INSERT INTO notificaciones (usuario_id, tramite_id, tipo, titulo, mensaje)
+        VALUES (?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([$tramite['usuario_id'], $tramiteId, $notifTipo, $notifTitulo, $notifMensaje]);
 
     $conn->commit();
 

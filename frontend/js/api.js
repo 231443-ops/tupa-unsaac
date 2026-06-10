@@ -108,7 +108,7 @@ const API = (() => {
      */
     const apiGet = async (endpoint, params = {}, timeout = DEFAULT_TIMEOUT) => {
         // Construir URL con parámetros query
-        const url = new URL(`${BASE_URL}/${endpoint}`, window.location.origin);
+        const url = new URL(`${BASE_URL}${endpoint}`, window.location.origin);
         Object.keys(params).forEach(key => {
             if (params[key] !== null && params[key] !== undefined && params[key] !== '') {
                 url.searchParams.append(key, params[key]);
@@ -144,7 +144,7 @@ const API = (() => {
      * @returns {Promise<Object>}
      */
     const apiPost = async (endpoint, data = {}, timeout = DEFAULT_TIMEOUT) => {
-        const url = new URL(`${BASE_URL}/${endpoint}`, window.location.origin).toString();
+        const url = new URL(`${BASE_URL}${endpoint}`, window.location.origin).toString();
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -175,7 +175,7 @@ const API = (() => {
      * @returns {Promise<Object>}
      */
     const apiPut = async (endpoint, data = {}, timeout = DEFAULT_TIMEOUT) => {
-        const url = new URL(`${BASE_URL}/${endpoint}`, window.location.origin).toString();
+        const url = new URL(`${BASE_URL}${endpoint}`, window.location.origin).toString();
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -205,7 +205,7 @@ const API = (() => {
      * @returns {Promise<Object>}
      */
     const apiDelete = async (endpoint, timeout = DEFAULT_TIMEOUT) => {
-        const url = new URL(`${BASE_URL}/${endpoint}`, window.location.origin).toString();
+        const url = new URL(`${BASE_URL}${endpoint}`, window.location.origin).toString();
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -236,7 +236,7 @@ const API = (() => {
      * @returns {Promise<Object>}
      */
     const apiUpload = async (endpoint, formData, onProgress = null, timeout = 60000) => {
-        const url = new URL(`${BASE_URL}/${endpoint}`, window.location.origin).toString();
+        const url = new URL(`${BASE_URL}${endpoint}`, window.location.origin).toString();
 
         // Si hay callback de progreso, usar XMLHttpRequest
         if (onProgress && typeof onProgress === 'function') {
